@@ -40,13 +40,14 @@
       (spit path (get-page (assoc options :uri uri))))))
 
 (defn- delete-file-recursively [f]
-  (let [f (io/file f)]
-    (if (.isDirectory f)
-      (doseq [child (.listFiles f)]
-        (delete-file-recursively child)))
-    (io/delete-file f)))
+  (if (.isDirectory f)
+    (doseq [child (.listFiles f)]
+      (delete-file-recursively child)))
+  (io/delete-file f))
 
 (defn delete-directory! [f]
-  (if (.isDirectory (io/file f))
-    (delete-file-recursively f)
-    (throw (Exception. (str f " is not a directory.")))))
+  (let [file (io/file f)]
+    (if (.isDirectory file)
+      (delete-file-recursively file)
+      (if (.exists file)
+        (throw (Exception. (str f " is not a directory.")))))))

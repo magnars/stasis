@@ -53,15 +53,24 @@
                  tmp-dir {:conf "served"})
    (slurp (str tmp-dir "/page/index.html")) => "I got served"))
 
-(fact
- "It's really easy emptying an entire folder of files. Be careful."
+(with-tmp-dir
+  (export-pages {"/folder/page.html" (fn [_] "Contents")} tmp-dir {})
 
- (with-tmp-dir
-   (export-pages {"/folder/page.html" (fn [_] "Contents")} tmp-dir {})
+  (fact
+   "You can't accidentaly delete a file with delete-directory!"
 
-   (io/as-file (str tmp-dir "/folder/page.html")) => #(.exists %)
+   (delete-directory! (str tmp-dir "/folder/page.html"))
+   => (throws Exception (str tmp-dir "/folder/page.html is not a directory.")))
+
+  (fact
+   "But it's really easy emptying an entire folder of files. Be careful."
 
    (delete-directory! (str tmp-dir "/folder"))
 
    (io/as-file (str tmp-dir "/folder/page.html")) => #(not (.exists %))
-   (io/as-file (str tmp-dir "/folder")) => #(not (.exists %))))
+   (io/as-file (str tmp-dir "/folder")) => #(not (.exists %)))
+
+  (fact
+   "Deleting non-existing folders is a-o-k. It's all about the idempotence, baby."
+
+   (delete-directory! (str tmp-dir "/missing"))))
