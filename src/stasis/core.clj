@@ -11,9 +11,9 @@
   (zipmap (map normalize-uri (keys pages))
           (vals pages)))
 
-(defn- serve-page [page request]
+(defn- serve-page [get-page request]
   {:status 200
-   :body (page request)
+   :body (-> request get-page :body)
    :headers {"Content-Type" "text/html"}})
 
 (def not-found
@@ -25,8 +25,8 @@
   (let [pages (normalize-page-uris pages)]
     (fn [request]
       (let [uri (normalize-uri (:uri request))]
-        (if-let [page (pages uri)]
-          (serve-page page (assoc request :uri uri))
+        (if-let [get-page (pages uri)]
+          (serve-page get-page (assoc request :uri uri))
           not-found)))))
 
 (defn- create-folders [path]
@@ -37,7 +37,9 @@
     (let [uri (normalize-uri uri)
           path (str target-dir uri)]
       (create-folders path)
-      (spit path (get-page (assoc options :uri uri))))))
+      (->> (get-page (assoc options :uri uri))
+           :body
+           (spit path)))))
 
 (defn- delete-file-recursively [f]
   (if (.isDirectory f)

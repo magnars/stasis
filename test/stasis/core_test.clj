@@ -7,7 +7,7 @@
 (fact
  "Stasis creates a Ring handler to serve your pages."
 
- (let [app (serve-pages {"/page.html" (fn [req] "The page contents")})]
+ (let [app (serve-pages {"/page.html" (fn [req] {:body "The page contents"})})]
 
    (fact (app {:uri "/page.html"})
          => {:status 200
@@ -22,7 +22,7 @@
  "If you use paths without .html, it serves them as directories with
   an index.html."
 
- (let [app (serve-pages {"/page/" (fn [req] (str "I'm serving " (:uri req)))})]
+ (let [app (serve-pages {"/page/" (fn [req] {:body (str "I'm serving " (:uri req))})})]
 
    (fact (:body (app {:uri "/page/index.html"})) => "I'm serving /page/index.html")
    (fact (:body (app {:uri "/page/"})) => "I'm serving /page/index.html")
@@ -32,7 +32,7 @@
  "Stasis exports pages to your directory of choice."
 
  (with-tmp-dir
-   (export-pages {"/page/index.html" (fn [req] "The contents")}
+   (export-pages {"/page/index.html" (fn [req] {:body "The contents"})}
                  tmp-dir {})
    (slurp (str tmp-dir "/page/index.html")) => "The contents"))
 
@@ -40,7 +40,7 @@
  "Stasis adds the :uri the 'request' for exported pages too."
 
  (with-tmp-dir
-   (export-pages {"/page" (fn [req] (str "I'm serving " (:uri req)))}
+   (export-pages {"/page" (fn [req] {:body (str "I'm serving " (:uri req))})}
                  tmp-dir {})
    (slurp (str tmp-dir "/page/index.html")) => "I'm serving /page/index.html"))
 
@@ -49,12 +49,12 @@
   configuration options, or optimus assets."
 
  (with-tmp-dir
-   (export-pages {"/page" (fn [req] (str "I got " (:conf req)))}
+   (export-pages {"/page" (fn [req] {:body (str "I got " (:conf req))})}
                  tmp-dir {:conf "served"})
    (slurp (str tmp-dir "/page/index.html")) => "I got served"))
 
 (with-tmp-dir
-  (export-pages {"/folder/page.html" (fn [_] "Contents")} tmp-dir {})
+  (export-pages {"/folder/page.html" (fn [req] {:body "Contents"})} tmp-dir {})
 
   (fact
    "You can't accidentaly delete a file with delete-directory!"
