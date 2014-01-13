@@ -5,16 +5,20 @@
   (cond
    (.endsWith uri ".html") uri
    (.endsWith uri "/") (str uri "index.html")
-   :else (str uri "/index.html")))
+   (re-find #"/[^./]+$" uri) (str uri "/index.html")
+   :else uri))
 
 (defn- normalize-page-uris [pages]
   (zipmap (map normalize-uri (keys pages))
           (vals pages)))
 
+(defn- assoc-if [m assoc? k v]
+  (if assoc? (assoc m k v) m))
+
 (defn- serve-page [get-page request]
-  {:status 200
-   :body (-> request get-page :body)
-   :headers {"Content-Type" "text/html"}})
+  (-> {:status 200
+       :body (-> request get-page :body)}
+      (assoc-if (.endsWith (:uri request) ".html") :headers {"Content-Type" "text/html"})))
 
 (def not-found
   {:status 404
@@ -24,9 +28,9 @@
 (defn serve-pages [pages]
   (let [pages (normalize-page-uris pages)]
     (fn [request]
-      (let [uri (normalize-uri (:uri request))]
-        (if-let [get-page (pages uri)]
-          (serve-page get-page (assoc request :uri uri))
+      (let [request (update-in request [:uri] normalize-uri)]
+        (if-let [get-page (pages (:uri request))]
+          (serve-page get-page request)
           not-found)))))
 
 (defn- create-folders [path]

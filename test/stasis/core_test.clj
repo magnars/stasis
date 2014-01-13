@@ -29,6 +29,14 @@
    (fact (:body (app {:uri "/page"})) => "I'm serving /page/index.html")))
 
 (fact
+ "You can serve other types of assets too."
+
+ (let [app (serve-pages {"/page-details.js" (fn [req] {:body (str "alert('" (:uri req) "');")})})]
+
+   (fact (app {:uri "/page-details.js"}) => {:status 200
+                                             :body "alert('/page-details.js');"})))
+
+(fact
  "Stasis exports pages to your directory of choice."
 
  (with-tmp-dir
