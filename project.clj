@@ -1,4 +1,4 @@
-(defproject stasis "0.2.0"
+(defproject stasis "0.3.0"
   :description "A library of tools for creating static websites."
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
