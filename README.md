@@ -4,7 +4,7 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "0.1.0"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "0.3.0"]` to `:dependencies` in your `project.clj`.
 
 ## Another static site generator? Why?
 
@@ -29,7 +29,7 @@ useful when creating static web sites.
 Stasis works with a map of pages:
 
 ```clj
-(def pages {"/index.html" (fn [request] "<h1>Welcome!</h1>")})`
+(def pages {"/index.html" (fn [request] {:body "<h1>Welcome!</h1>"})})
 ```
 
 The basic use case is to serve these live on a local server while
@@ -47,19 +47,34 @@ Stasis creates a Ring handler to serve your pages.
 (def app (stasis/serve-pages pages))
 ```
 
-So just like with any Ring app, you point to this app var in `project.clj`:
+So like with any Ring app, you point to this app var in `project.clj`:
 
 ```clj
 {:ring {:handler example/app}}
 ```
 
-Start the server and view your pages. Since `serve-pages` takes an
-actual map, you can't actually add any pages live. That sucks. I'll
-have to change that. :-)
+and start it with `lein ring server-headless`.
 
 #### Exporting the pages
 
+To export pages, just give Stasis some pages and a target directory:
 
+```clj
+(defn export []
+  (stasis/delete-directory! target-dir)
+  (stasis/export-pages pages target-dir))
+```
+
+In this example we're also deleting the target-dir first, to ensure
+old pages are removed.
+
+When you've got this function, you can create an alias for leiningen:
+
+```clj
+:aliases {"build-site" ["run" "-m" example/export"]}
+```
+
+and run `lein build-site` on the command line.
 
 ## License
 
