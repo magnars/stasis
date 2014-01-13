@@ -9,39 +9,47 @@
 
  (let [app (serve-pages {"/page.html" (fn [req] {:body "The page contents"})})]
 
-   (fact (app {:uri "/page.html"})
-         => {:status 200
-             :body "The page contents"
-             :headers {"Content-Type" "text/html"}})
+   (app {:uri "/page.html"}) => {:status 200
+                                 :body "The page contents"
+                                 :headers {"Content-Type" "text/html"}}
 
-   (fact (app {:uri "/missing.html"})
-         => {:status 404
-             :body "<h1>Page not found</h1>"
-             :headers {"Content-Type" "text/html"}})))
+   (app {:uri "/missing.html"}) => {:status 404
+                                    :body "<h1>Page not found</h1>"
+                                    :headers {"Content-Type" "text/html"}}))
+
 (fact
  "If you use paths without .html, it serves them as directories with
   an index.html."
 
  (let [app (serve-pages {"/page/" (fn [req] {:body (str "I'm serving " (:uri req))})})]
 
-   (fact (:body (app {:uri "/page/index.html"})) => "I'm serving /page/index.html")
-   (fact (:body (app {:uri "/page/"})) => "I'm serving /page/index.html")
-   (fact (:body (app {:uri "/page"})) => "I'm serving /page/index.html")))
+   (:body (app {:uri "/page/index.html"})) => "I'm serving /page/index.html"
+   (:body (app {:uri "/page/"})) => "I'm serving /page/index.html"
+   (:body (app {:uri "/page"})) => "I'm serving /page/index.html"))
+
+(fact
+ "You can pass along config options to serve-pages that will be
+  included on each request."
+
+ (let [app (serve-pages {"/page" (fn [req] {:body (str "Config: " (:config req))})}
+                        {:config "Passed!"})]
+
+   (:body (app {:uri "/page"})) => "Config: Passed!"))
 
 (fact
  "You can serve other types of assets too."
 
  (let [app (serve-pages {"/page-details.js" (fn [req] {:body (str "alert('" (:uri req) "');")})})]
 
-   (fact (app {:uri "/page-details.js"}) => {:status 200
-                                             :body "alert('/page-details.js');"})))
+   (app {:uri "/page-details.js"}) => {:status 200
+                                       :body "alert('/page-details.js');"}))
 
 (fact
  "Stasis exports pages to your directory of choice."
 
  (with-tmp-dir
    (export-pages {"/page/index.html" (fn [req] {:body "The contents"})}
-                 tmp-dir {})
+                 tmp-dir)
    (slurp (str tmp-dir "/page/index.html")) => "The contents"))
 
 (fact
@@ -49,7 +57,7 @@
 
  (with-tmp-dir
    (export-pages {"/page" (fn [req] {:body (str "I'm serving " (:uri req))})}
-                 tmp-dir {})
+                 tmp-dir)
    (slurp (str tmp-dir "/page/index.html")) => "I'm serving /page/index.html"))
 
 (fact

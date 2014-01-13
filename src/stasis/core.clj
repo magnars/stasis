@@ -25,18 +25,18 @@
    :body "<h1>Page not found</h1>"
    :headers {"Content-Type" "text/html"}})
 
-(defn serve-pages [pages]
+(defn serve-pages [pages & [options]]
   (let [pages (normalize-page-uris pages)]
     (fn [request]
       (let [request (update-in request [:uri] normalize-uri)]
         (if-let [get-page (pages (:uri request))]
-          (serve-page get-page request)
+          (serve-page get-page (merge request options))
           not-found)))))
 
 (defn- create-folders [path]
   (.mkdirs (.getParentFile (io/file path))))
 
-(defn export-pages [pages target-dir options]
+(defn export-pages [pages target-dir & [options]]
   (doseq [[uri get-page] pages]
     (let [uri (normalize-uri uri)
           path (str target-dir uri)]
