@@ -16,6 +16,7 @@ blog, you should take a look at these:
 - [Madness](http://algernon.github.io/madness/) is a static site generator, based on Enlive and Bootstrap.
 - [Static](http://nakkaya.com/static.html) is a simple static site generator written in Clojure.
 - [Ecstatic](http://samrat.me/ecstatic/) creates static web pages and blog posts from Hiccup templates and Markdown.
+- [incise](https://github.com/RyanMcG/incise) is an extensible static site generator written in Clojure.
 
 They generally come with a folder where you put your blog posts in
 some template language, and a set of configuration options about how
@@ -50,7 +51,7 @@ Stasis creates a Ring handler to serve your pages.
 So like with any Ring app, you point to this app var in `project.clj`:
 
 ```clj
-{:ring {:handler example/app}}
+:ring {:handler example/app}
 ```
 
 and start it with `lein ring server-headless`.
@@ -71,7 +72,7 @@ old pages are removed.
 When you've got this function, you can create an alias for leiningen:
 
 ```clj
-:aliases {"build-site" ["run" "-m" example/export"]}
+:aliases {"build-site" ["run" "-m" "example/export"]}
 ```
 
 and run `lein build-site` on the command line.
