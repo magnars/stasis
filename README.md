@@ -42,8 +42,9 @@ server.
 Stasis creates a Ring handler to serve your pages.
 
 To be fully live, it needs a `get-pages` function to get the map of
-pages. This way you can generate pages based on some files in some
-folder, and they'll show up with no need to restart.
+pages. This way you can dynamically determine which pages to serve -
+like based on files in a folder - and they'll show up with no need to
+restart.
 
 ```clj
 (ns example
@@ -55,7 +56,7 @@ folder, and they'll show up with no need to restart.
 (def app (stasis/serve-pages get-pages))
 ```
 
-Like with any Ring app, you point to this app var in `project.clj`:
+Like with any Ring app, you point to your `app` in `project.clj`:
 
 ```clj
 :ring {:handler example/app}
@@ -82,7 +83,8 @@ When you've got this function, you can create an alias for leiningen:
 :aliases {"build-site" ["run" "-m" "example/export"]}
 ```
 
-and run `lein build-site` on the command line.
+and run `lein build-site` on the command line. No need for a lein
+plugin.
 
 ## License
 
