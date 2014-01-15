@@ -57,3 +57,8 @@
       (delete-file-recursively file)
       (if (.exists file)
         (throw (Exception. (str f " is not a directory.")))))))
+
+(defn slurp-files [dir regexp]
+  (->> (.listFiles (io/as-file dir))
+       (filter #(re-find regexp (.getName %)))
+       (map slurp)))

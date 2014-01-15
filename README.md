@@ -86,6 +86,23 @@ When you've got this function, you can create an alias for leiningen:
 and run `lein build-site` on the command line. No need for a lein
 plugin.
 
+## So, what else does Stasis have to offer?
+
+This is about everything you need to start building static sites. But
+Stasis does come with a few more tools.
+
+### `slurp-files`
+
+You'll probably create a folder to hold a list of pages, posts,
+products or people at some point. Read them all in with `slurp-files`:
+
+```clj
+(slurp-files "resources/products/" #"\.edn$")
+```
+
+This matches all edn-files in `resources/products/` and slurps in
+their contents.
+
 ## License
 
 Copyright © 2014 Magnar Sveen

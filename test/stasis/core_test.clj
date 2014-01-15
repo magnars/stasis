@@ -2,7 +2,7 @@
   (:require [stasis.core :refer :all]
             [midje.sweet :refer :all]
             [clojure.java.io :as io]
-            [test-with-files.core :refer [with-tmp-dir tmp-dir]]))
+            [test-with-files.core :refer [with-files with-tmp-dir tmp-dir]]))
 
 (fact
  "Stasis creates a Ring handler to serve your pages."
@@ -94,3 +94,11 @@
    "Deleting non-existing folders is a-o-k. It's all about the idempotence, baby."
 
    (delete-directory! (str tmp-dir "/missing"))))
+
+(with-files [["/texts/banana.txt" "Banana"]
+             ["/texts/apple.txt" "Apple"]
+             ["/texts/fruit.txt" "Fruit"]
+             ["/texts/irrelevant.md" "Left out"]]
+
+  (fact (set (slurp-files (str tmp-dir "/texts") #"\.txt$"))
+        => #{"Banana" "Apple" "Fruit"}))
