@@ -7,7 +7,8 @@
 (fact
  "Stasis creates a Ring handler to serve your pages."
 
- (let [app (serve-pages {"/page.html" (fn [req] {:body "The page contents"})})]
+ (let [get-pages (fn [] {"/page.html" (fn [req] {:body "The page contents"})})
+       app (serve-pages get-pages)]
 
    (app {:uri "/page.html"}) => {:status 200
                                  :body "The page contents"
@@ -21,7 +22,8 @@
  "If you use paths without .html, it serves them as directories with
   an index.html."
 
- (let [app (serve-pages {"/page/" (fn [req] {:body (str "I'm serving " (:uri req))})})]
+ (let [get-pages (fn [] {"/page/" (fn [req] {:body (str "I'm serving " (:uri req))})})
+       app (serve-pages get-pages)]
 
    (:body (app {:uri "/page/index.html"})) => "I'm serving /page/index.html"
    (:body (app {:uri "/page/"})) => "I'm serving /page/index.html"
@@ -31,7 +33,8 @@
  "You can pass along config options to serve-pages that will be
   included on each request."
 
- (let [app (serve-pages {"/page" (fn [req] {:body (str "Config: " (:config req))})}
+ (let [get-pages (fn [] {"/page" (fn [req] {:body (str "Config: " (:config req))})})
+       app (serve-pages get-pages
                         {:config "Passed!"})]
 
    (:body (app {:uri "/page"})) => "Config: Passed!"))
@@ -39,7 +42,8 @@
 (fact
  "You can serve other types of assets too."
 
- (let [app (serve-pages {"/page-details.js" (fn [req] {:body (str "alert('" (:uri req) "');")})})]
+ (let [get-pages (fn [] {"/page-details.js" (fn [req] {:body (str "alert('" (:uri req) "');")})})
+       app (serve-pages get-pages)]
 
    (app {:uri "/page-details.js"}) => {:status 200
                                        :body "alert('/page-details.js');"}))

@@ -41,14 +41,21 @@ server.
 
 Stasis creates a Ring handler to serve your pages.
 
+To be fully live, it needs a `get-pages` function to get the map of
+pages. This way you can generate pages based on some files in some
+folder, and they'll show up with no need to restart.
+
 ```clj
 (ns example
   (:require [stasis.core :as stasis]))
 
-(def app (stasis/serve-pages pages))
+(defn get-pages []
+  {"/index.html" (fn [request] {:body "<h1>Welcome!</h1>"})})
+
+(def app (stasis/serve-pages get-pages))
 ```
 
-So like with any Ring app, you point to this app var in `project.clj`:
+Like with any Ring app, you point to this app var in `project.clj`:
 
 ```clj
 :ring {:handler example/app}
@@ -63,7 +70,7 @@ To export pages, just give Stasis some pages and a target directory:
 ```clj
 (defn export []
   (stasis/delete-directory! target-dir)
-  (stasis/export-pages pages target-dir))
+  (stasis/export-pages (get-pages) target-dir))
 ```
 
 In this example we're also deleting the target-dir first, to ensure
