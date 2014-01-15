@@ -4,7 +4,7 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "0.4.0"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "0.4.1"]` to `:dependencies` in your `project.clj`.
 
 ## Another static site generator? Why?
 
@@ -97,11 +97,12 @@ You'll probably create a folder to hold a list of pages, posts,
 products or people at some point. Read them all in with `slurp-files`:
 
 ```clj
-(slurp-files "resources/products/" #"\.edn$")
+(def products (->> (slurp-files "resources/products/" #"\.edn$")
+                   (map read-string)))
 ```
 
-This matches all edn-files in `resources/products/` and slurps in
-their contents.
+This matches all edn-files in `resources/products/`, slurps in their
+contents and transforms it to Clojure data structures.
 
 ## License
 
