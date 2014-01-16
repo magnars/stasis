@@ -98,6 +98,16 @@ When you've got this function, you can create an alias for leiningen:
 and run `lein build-site` on the command line. No need for a lein
 plugin.
 
+#### What's with the `(fn [request] ...)` around page contents?
+
+Since we're dynamically building everything for each request, having a
+function around the contents means you don't have to build out the
+entire site contents every time. That's potentially quite a lot of
+parsing.
+
+Then there are some Ring middlewares that put values on the `request`
+to be used in rendering. This supports that. Read on:
+
 ## But what about stylesheets, images and javascript?
 
 Yeah, Stasis doesn't really concern itself with that, since it doesn't
