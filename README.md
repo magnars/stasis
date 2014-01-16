@@ -9,11 +9,12 @@ Add `[stasis "0.5.0"]` to `:dependencies` in your `project.clj`.
 ## Another static site framework? Why?
 
 Well, that's exactly it. I didn't want to use a framework. I don't
-like the restrained feeling when using them. I prefer coding things
-over messing around with configuration files.
+like the restrained feeling I get when using them. I prefer coding
+things over messing around with configuration files.
 
 I want to
 
+- code my own pages
 - set up my own configuration
 - choose my own templating library
 - create my own damn stylesheets
@@ -36,8 +37,6 @@ They generally come with a folder where you put your blog posts in
 some template language, and a set of configuration options about how
 to set up your blog.
 
-This is not that.
-
 ## Usage
 
 Stasis works with a map of pages:
@@ -52,7 +51,7 @@ server.
 
 #### Serving live pages locally
 
-Stasis creates a Ring handler to serve your pages.
+Stasis can create a Ring handler to serve your pages.
 
 ```clj
 (ns example
