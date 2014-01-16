@@ -139,11 +139,8 @@ started, here's an example:
             [optimus.assets :as assets]
             [optimus.optimizations :as optimizations]
             [optimus.strategies :refer [serve-live-assets]]
-            [optimus.export]))
-
-(defn get-assets []
-  (assets/load-assets "public" ["/styles/all.css"
-                                #"/photos/.*\.jpg"]))
+            [optimus.export]
+            [example.app :refer [get-assets get-pages target-dir]]))
 
 (def app (-> (stasis/serve-pages get-pages)
              (optimus/wrap get-assets optimizations/all serve-live-assets)
