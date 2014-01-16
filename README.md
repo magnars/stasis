@@ -6,11 +6,17 @@ A Clojure library of tools for developing static web sites.
 
 Add `[stasis "0.5.0"]` to `:dependencies` in your `project.clj`.
 
-## Another static site generator? Why?
+## Another static site framework? Why?
 
-I didn't want a static site *framework*, I wanted a *library*. If
-you want a framework that makes it really quick and easy to create a
-blog, you should take a look at these:
+Well, that's exactly it. I didn't want to use a framework. I don't
+like the restrained feeling when using them. I prefer coding things
+over messing around with configuration files.
+
+Statis offers only a few functions that are pretty useful when
+creating static web sites.
+
+If you want a framework that makes it really quick and easy to create
+a blog, you should take a look at these:
 
 - [misaki](https://github.com/liquidz/misaki) is a Jekyll inspired static site generator in Clojure.
 - [Madness](http://algernon.github.io/madness/) is a static site generator, based on Enlive and Bootstrap.
@@ -22,8 +28,7 @@ They generally come with a folder where you put your blog posts in
 some template language, and a set of configuration options about how
 to set up your blog.
 
-This is not that. This is just a set of functions that are pretty
-useful when creating static web sites.
+This is not that.
 
 ## Usage
 
