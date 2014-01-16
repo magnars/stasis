@@ -92,15 +92,17 @@ plugin.
 
 #### Even more lively live pages
 
-Let's say you want to dynamically determine which pages to serve -
-maybe based on files in a folder. You'll want those to show up without
+Let's say you want to dynamically determine the set of pages - maybe
+based on files in a folder. You'll want those to show up without
 restarting.
 
 To be fully live, instead pass `serve-pages` a `get-pages` function:
 
 ```clj
 (defn get-pages []
-  {"/index.html" (fn [request] {:body "<h1>Welcome!</h1>"})})
+  (merge {"/index.html" (fn [request] {:body "<h1>Welcome!</h1>"})}
+         (get-product-pages)
+         (get-people-pages)))
 
 (def app (stasis/serve-pages get-pages))
 ```
