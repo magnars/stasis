@@ -22,7 +22,7 @@ I want to
 **Statis only offers a few functions that are pretty useful when
 creating static web sites.**
 
-There are no batteries included.
+No more. There are no batteries included.
 
 If you want a framework that makes it really quick and easy to create
 a blog, you should take a look at these:
@@ -57,16 +57,8 @@ Stasis can create a Ring handler to serve your pages.
 (ns example
   (:require [stasis.core :as stasis]))
 
-(defn get-pages []
-  {"/index.html" (fn [request] {:body "<h1>Welcome!</h1>"})})
-
-(def app (stasis/serve-pages get-pages))
+(def app (stasis/serve-pages pages))
 ```
-
-Notice that to be fully live, it needs a `get-pages` function to get
-the map of pages. This way you can dynamically determine which pages
-to serve - maybe based on files in a folder - and they'll show up with
-no need to restart.
 
 Like with any Ring app, you point to your `app` in `project.clj`:
 
@@ -83,7 +75,7 @@ To export pages, just give Stasis some pages and a target directory:
 ```clj
 (defn export []
   (stasis/delete-directory! target-dir)
-  (stasis/export-pages (get-pages) target-dir))
+  (stasis/export-pages pages target-dir))
 ```
 
 In this example we're also deleting the target-dir first, to ensure
@@ -97,6 +89,21 @@ When you've got this function, you can create an alias for leiningen:
 
 and run `lein build-site` on the command line. No need for a lein
 plugin.
+
+#### Even more lively live pages
+
+Let's say you want to dynamically determine which pages to serve -
+maybe based on files in a folder. You'll want those to show up without
+restarting.
+
+To be fully live, instead pass `serve-pages` a `get-pages` function:
+
+```clj
+(defn get-pages []
+  {"/index.html" (fn [request] {:body "<h1>Welcome!</h1>"})})
+
+(def app (stasis/serve-pages get-pages))
+```
 
 #### What's with the `(fn [request] ...)` around page contents?
 

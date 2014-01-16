@@ -26,12 +26,15 @@
    :headers {"Content-Type" "text/html"}})
 
 (defn serve-pages [get-pages & [options]]
-  (fn [request]
-    (let [pages (normalize-page-uris (get-pages))
-          request (update-in request [:uri] normalize-uri)]
-      (if-let [get-page (pages (:uri request))]
-        (serve-page get-page (merge request options))
-        not-found))))
+  (let [get-pages (if (map? get-pages) ;; didn't pass a fn, just a map of pages
+                    (fn [] get-pages)
+                    get-pages)]
+   (fn [request]
+     (let [pages (normalize-page-uris (get-pages))
+           request (update-in request [:uri] normalize-uri)]
+       (if-let [get-page (pages (:uri request))]
+         (serve-page get-page (merge request options))
+         not-found)))))
 
 (defn- create-folders [path]
   (.mkdirs (.getParentFile (io/file path))))

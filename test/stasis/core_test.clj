@@ -7,8 +7,7 @@
 (fact
  "Stasis creates a Ring handler to serve your pages."
 
- (let [get-pages (fn [] {"/page.html" (fn [req] {:body "The page contents"})})
-       app (serve-pages get-pages)]
+ (let [app (serve-pages {"/page.html" (fn [req] {:body "The page contents"})})]
 
    (app {:uri "/page.html"}) => {:status 200
                                  :body "The page contents"
@@ -19,11 +18,21 @@
                                     :headers {"Content-Type" "text/html"}}))
 
 (fact
+ "You can pass in a `get-pages` function too, if you need to determine
+  the set of pages dynamically and want them to be properly live."
+
+ (let [get-pages (fn [] {"/page.html" (fn [req] {:body "The page contents"})})
+       app (serve-pages get-pages)]
+
+   (app {:uri "/page.html"}) => {:status 200
+                                 :body "The page contents"
+                                 :headers {"Content-Type" "text/html"}}))
+
+(fact
  "If you use paths without .html, it serves them as directories with
   an index.html."
 
- (let [get-pages (fn [] {"/page/" (fn [req] {:body (str "I'm serving " (:uri req))})})
-       app (serve-pages get-pages)]
+ (let [app (serve-pages {"/page/" (fn [req] {:body (str "I'm serving " (:uri req))})})]
 
    (:body (app {:uri "/page/index.html"})) => "I'm serving /page/index.html"
    (:body (app {:uri "/page/"})) => "I'm serving /page/index.html"
@@ -33,8 +42,7 @@
  "You can pass along config options to serve-pages that will be
   included on each request."
 
- (let [get-pages (fn [] {"/page" (fn [req] {:body (str "Config: " (:config req))})})
-       app (serve-pages get-pages
+ (let [app (serve-pages {"/page" (fn [req] {:body (str "Config: " (:config req))})}
                         {:config "Passed!"})]
 
    (:body (app {:uri "/page"})) => "Config: Passed!"))
@@ -42,8 +50,7 @@
 (fact
  "You can serve other types of assets too."
 
- (let [get-pages (fn [] {"/page-details.js" (fn [req] {:body (str "alert('" (:uri req) "');")})})
-       app (serve-pages get-pages)]
+ (let [app (serve-pages {"/page-details.js" (fn [req] {:body (str "alert('" (:uri req) "');")})})]
 
    (app {:uri "/page-details.js"}) => {:status 200
                                        :body "alert('/page-details.js');"}))
@@ -83,7 +90,7 @@
    => (throws Exception (str tmp-dir "/folder/page.html is not a directory.")))
 
   (fact
-   "But it's really easy emptying an entire folder of files. Be careful."
+   "But it's really easy removing an entire folder of files. Be careful."
 
    (delete-directory! (str tmp-dir "/folder"))
 
