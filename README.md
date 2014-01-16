@@ -12,8 +12,16 @@ Well, that's exactly it. I didn't want to use a framework. I don't
 like the restrained feeling when using them. I prefer coding things
 over messing around with configuration files.
 
-Statis offers only a few functions that are pretty useful when
-creating static web sites.
+I want to
+
+- set up my own configuration
+- choose my own templating library
+- create my own damn stylesheets
+
+**Statis offers only a few functions that are pretty useful when
+creating static web sites.**
+
+There are no batteries included.
 
 If you want a framework that makes it really quick and easy to create
 a blog, you should take a look at these:
