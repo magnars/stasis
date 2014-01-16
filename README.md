@@ -98,6 +98,65 @@ When you've got this function, you can create an alias for leiningen:
 and run `lein build-site` on the command line. No need for a lein
 plugin.
 
+## But what about stylesheets, images and javascript?
+
+Yeah, Stasis doesn't really concern itself with that, since it doesn't
+have to.
+
+In its simplest form, you can add some JavaScript and CSS to the map
+of pages. It'll be served and exported just fine. Which is good if you
+want to dynamically create some JSON, for instance.
+
+But for truly static assets, I recommend a frontend optimization
+library. You can use any asset lib that hooks into Ring and lets you
+export the optimized assets to disk.
+
+I use [Optimus](https://github.com/magnars/optimus). To get you
+started, here's an example:
+
+```clj
+(ns example
+  (:require [ring.middleware.content-type :refer [wrap-content-type]]
+            [stasis.core :as stasis]
+            [optimus.prime :as optimus]
+            [optimus.assets :as assets]
+            [optimus.optimizations :as optimizations]
+            [optimus.strategies :refer [serve-live-assets]]
+            [optimus.export]))
+
+(defn get-assets []
+  (assets/load-assets "public" ["/styles/all.css"
+                                #"/photos/.*\.jpg"]))
+
+(def app (-> (stasis/serve-pages get-pages)
+             (optimus/wrap get-assets optimizations/all serve-live-assets)
+             wrap-content-type))
+
+(defn export []
+  (let [assets (optimizations/all (get-assets) {})]
+    (stasis/delete-directory! target-dir)
+    (optimus.export/save-assets assets target-dir)
+    (stasis/export-pages (get-pages) target-dir {:optimus-assets assets})))
+```
+
+I create a function to get all the assets, and then add the Optimus
+Ring middleware to my app. I want to serve assets live, but still have
+them optimized - this lets my dev environment be as similar to prod as
+possible.
+
+Then I simply tell Optimus to export its assets into the same target
+dir as Stasis.
+
+Notice that I add `:optimus-assets` to the config map passed to
+`stasis/export-pages`, which will then be available on the `request`
+map passed to each page-generating function. This mirrors what
+`optimus/wrap` does on the live Ring server, and allows for linking to
+assets by their original path.
+
+That's all the detail I'll go into here, but you can read more about
+all the ways Optimus helps you with frontend performance optimization
+in its extensive [README](https://github.com/magnars/optimus).
+
 ## So, what else does Stasis have to offer?
 
 This is about everything you need to start building static sites. But
