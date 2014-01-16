@@ -100,5 +100,16 @@
              ["/texts/fruit.txt" "Fruit"]
              ["/texts/irrelevant.md" "Left out"]]
 
-  (fact (set (slurp-files (str tmp-dir "/texts") #"\.txt$"))
-        => #{"Banana" "Apple" "Fruit"}))
+  (fact (slurp-directory (str tmp-dir "/texts") #"\.txt$")
+        => {"/banana.txt" "Banana"
+            "/apple.txt" "Apple"
+            "/fruit.txt" "Fruit"}))
+
+(with-files [["/texts/fruit/banana.txt" "Banana"]
+             ["/texts/fruit/apple.txt" "Apple"]
+             ["/texts/vegetables/cucumber.txt" "Cucumber"]]
+
+  (fact (slurp-directory (str tmp-dir "/texts") #"\.txt$")
+        => {"/fruit/banana.txt" "Banana"
+            "/fruit/apple.txt" "Apple"
+            "/vegetables/cucumber.txt" "Cucumber"}))

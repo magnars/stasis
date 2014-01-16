@@ -58,7 +58,10 @@
       (if (.exists file)
         (throw (Exception. (str f " is not a directory.")))))))
 
-(defn slurp-files [dir regexp]
-  (->> (.listFiles (io/as-file dir))
-       (filter #(re-find regexp (.getName %)))
-       (map slurp)))
+(defn slurp-directory [dir regexp]
+  (let [dir (io/as-file dir)
+        path-from-dir #(subs (.getPath %) (count (.getPath dir)))]
+    (->> (file-seq dir)
+         (filter #(re-find regexp (path-from-dir %)))
+         (map (juxt path-from-dir slurp))
+         (into {}))))

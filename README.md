@@ -41,11 +41,6 @@ server.
 
 Stasis creates a Ring handler to serve your pages.
 
-To be fully live, it needs a `get-pages` function to get the map of
-pages. This way you can dynamically determine which pages to serve -
-like based on files in a folder - and they'll show up with no need to
-restart.
-
 ```clj
 (ns example
   (:require [stasis.core :as stasis]))
@@ -55,6 +50,11 @@ restart.
 
 (def app (stasis/serve-pages get-pages))
 ```
+
+Notice that to be fully live, it needs a `get-pages` function to get
+the map of pages. This way you can dynamically determine which pages
+to serve - like based on files in a folder - and they'll show up with
+no need to restart.
 
 Like with any Ring app, you point to your `app` in `project.clj`:
 
@@ -91,18 +91,29 @@ plugin.
 This is about everything you need to start building static sites. But
 Stasis does come with a few more tools.
 
-### `slurp-files`
+### `slurp-directory`
 
 You'll probably create a folder to hold a list of pages, posts,
-products or people at some point. Read them all in with `slurp-files`:
+products or people at some point. Read them all in with `slurp-directory`.
 
 ```clj
-(def products (->> (slurp-files "resources/products/" #"\.edn$")
+(def articles (slurp-directory "resources/articles/" #"\.md$"))
+```
+
+This gives us a map `{"/relative/path.md" "file contents"}`. The
+relative path can be useful if we're creating URLs based on file
+names.
+
+Here's another example:
+
+```clj
+(def products (->> (slurp-directory "resources/products/" #"\.edn$")
+                   (vals)
                    (map read-string)))
 ```
 
 This matches all edn-files in `resources/products/`, slurps in their
-contents and transforms it to Clojure data structures.
+contents and transforms it to a list of Clojure data structures.
 
 ## License
 
