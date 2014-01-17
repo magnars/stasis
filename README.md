@@ -206,6 +206,25 @@ Here's another example:
 This matches all edn-files in `resources/products/`, slurps in their
 contents and transforms it to a list of Clojure data structures.
 
+## Q & A
+
+### Why won't my enlive templates update when I edit them?
+
+Your template definitions are reloaded only when you touch the
+code in that namespace. Ring is unaware of the dependency on the
+template files.
+
+There are some tricks
+[in this thread](https://github.com/cgrand/enlive/issues/6). I prefer
+to place my templates in a separate namespace, and do this:
+
+```clj
+(defn reload-templates []
+  (require 'example.templates :reload))
+```
+
+And then call that in my `get-pages` function.
+
 ## License
 
 Copyright © 2014 Magnar Sveen
