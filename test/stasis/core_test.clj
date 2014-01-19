@@ -127,3 +127,24 @@
         => {"/fruit/banana.txt" "Banana"
             "/fruit/apple.txt" "Apple"
             "/vegetables/cucumber.txt" "Cucumber"}))
+
+(fact "It merges pages from several sources"
+      (merge-page-sources {:general-pages {"/people.html" "People"}
+                           :article-pages {"/folks.html" "Folks"}})
+      => {"/people.html" "People"
+          "/folks.html" "Folks"})
+
+(fact "Colliding urls are not tolerated when merging."
+
+      (merge-page-sources {:general-pages {"/people.html" ""
+                                           "/about.html" ""}
+                           :article-pages {"/people.html" ""
+                                           "/folks.html" ""}})
+      => (throws Exception "URL conflicts between :article-pages and :general-pages: #{\"/people.html\"}")
+
+      (merge-page-sources {:person-pages {"/magnars.html" ""
+                                          "/finnjoh.html" ""}
+                           :article-pages {"/magnars.html" ""
+                                           "/finnjoh.html" ""}
+                           :general-pages {"/people.html" ""}})
+      => (throws Exception "URL conflicts between :article-pages and :person-pages: #{\"/magnars.html\" \"/finnjoh.html\"}"))

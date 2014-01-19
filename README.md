@@ -90,7 +90,7 @@ When you've got this function, you can create an alias for leiningen:
 and run `lein build-site` on the command line. No need for a lein
 plugin.
 
-#### Even more lively live pages
+#### Livelier live pages
 
 Let's say you want to dynamically determine the set of pages - maybe
 based on files in a folder. You'll want those to show up without
@@ -109,8 +109,7 @@ To be fully live, instead pass `serve-pages` a `get-pages` function:
 
 #### Do I have to build every single page for each request?
 
-No. That's potentially quite a lot of parsing for a large site. You
-might also want to pass along some context to each page.
+No. That's potentially quite a lot of parsing for a large site.
 
 ```clj
 (def pages {"/index.html" (fn [context] (str "<h1>Welcome to " (:uri context) "!</h1>"))})
@@ -120,9 +119,10 @@ Since we're dynamically building everything for each request, having a
 function around the contents means you don't have to build out the
 entire site contents every time.
 
-The `context` equals the `request` when it's served live as a Ring
-app, and as such contains the given `:uri`. Stasis' `export-pages`
-makes sure to add `:uri` to the context too.
+You might also want to pass along some context to each page. When it's
+served live as a Ring app the `context` equals the request, and as
+such contains the given `:uri`. Stasis' `export-pages` makes sure to
+add `:uri` to the context too.
 
 You can also pass in configuration options that is included on the
 `context`:
@@ -226,6 +226,27 @@ Here's another example:
 
 This matches all edn-files in `resources/products/`, slurps in their
 contents and transforms it to a list of Clojure data structures.
+
+### `merge-page-sources`
+
+You might have several sources for pages that need to be merged into
+the final `pages` map. Wouldn't it be nice if someone told you about
+conflicting URLs?
+
+```
+(defn get-pages [content]
+  (merge-page-sources
+   {:person-pages (create-person-pages (:people content))
+    :article-pages (create-article-pages (:articles content))
+    :general-pages (create-general-pages content)}))
+```
+
+The values in this map should be the page-maps to merge. The keys in
+this map are only used for error reporting:
+
+```
+URL conflicts between :article-pages and :general-pages: #{"/about.html"}
+```
 
 ## Q & A
 

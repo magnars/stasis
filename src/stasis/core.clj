@@ -1,5 +1,6 @@
 (ns stasis.core
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [clojure.set :as set]))
 
 (defn- normalize-uri [#^String uri]
   (cond
@@ -72,3 +73,16 @@
          (filter #(re-find regexp (path-from-dir %)))
          (map (juxt path-from-dir slurp))
          (into {}))))
+
+(defn- guard-against-collisions [pages]
+  (doseq [k1 (keys pages)
+          k2 (keys pages)]
+    (when-not (= k1 k2)
+      (let [collisions (set/intersection (set (keys (k1 pages)))
+                                         (set (keys (k2 pages))))]
+        (when-not (empty? collisions)
+          (throw (Exception. (str "URL conflicts between " k1 " and " k2 ": " collisions)))))))
+  pages)
+
+(defn merge-page-sources [sources]
+  (->> sources guard-against-collisions vals (apply merge)))
