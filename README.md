@@ -277,7 +277,7 @@ Yeah, check these out:
 Got an open source site written in Stasis? Do let me know, and I'll
 add it here!
 
-### Why won't my enlive templates update when I edit them?
+### Why won't my Enlive templates update when I edit them?
 
 Your template definitions are reloaded only when you touch the
 code in that namespace. Ring is unaware of the dependency on the
@@ -324,8 +324,9 @@ an Atom feed:
      (map entry posts)])))
 ```
 
-There's even a library to create RSS for you here:
-[clj-rss](https://github.com/yogthos/clj-rss).
+If this seems like too much, well, maybe you're using the wrong static
+site library, but heck: There's even a library to create RSS for you
+here: [clj-rss](https://github.com/yogthos/clj-rss).
 
 ## License
 
