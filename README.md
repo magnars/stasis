@@ -325,7 +325,7 @@ an Atom feed:
 ```
 
 If this seems like too much, well, maybe you're using the wrong static
-site library, but heck: There's even a library to create RSS for you
+site library. But anyway, there's even a library to create RSS for you
 here: [clj-rss](https://github.com/yogthos/clj-rss).
 
 ## License
