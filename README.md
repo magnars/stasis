@@ -279,10 +279,9 @@ And then call that in my `get-pages` function.
 
 ### How do I create an RSS feed for my blog?
 
-No worries, it's just a bit of XML. Here's a working snippet from
-[whattheemacsd.com](http://whattheemacsd.com/)
-[(source)](https://github.com/magnars/what-the-emacsd) to create an
-Atom feed:
+No worries, it's just a bit of XML generation. Here's a working
+snippet from [whattheemacsd.com](http://whattheemacsd.com/) to create
+an Atom feed:
 
 ```clj
 (ns what-the-emacsd.rss
