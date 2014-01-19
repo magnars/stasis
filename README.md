@@ -42,7 +42,7 @@ to set up your blog. They might generate some code for you to tweak.
 Stasis works with a map of pages:
 
 ```clj
-(def pages {"/index.html" (fn [request] "<h1>Welcome!</h1>")})
+(def pages {"/index.html" (fn [context] "<h1>Welcome!</h1>")})
 ```
 
 The basic use case is to serve these live on a local server while
@@ -100,22 +100,37 @@ To be fully live, instead pass `serve-pages` a `get-pages` function:
 
 ```clj
 (defn get-pages []
-  (merge {"/index.html" (fn [request] "<h1>Welcome!</h1>")}
+  (merge {"/index.html" (fn [context] "<h1>Welcome!</h1>")}
          (get-product-pages)
          (get-people-pages)))
 
 (def app (stasis/serve-pages get-pages))
 ```
 
-#### What's with the `(fn [request] ...)` around page contents?
+#### What's with the `(fn [context] ...)` around page contents?
 
 Since we're dynamically building everything for each request, having a
 function around the contents means you don't have to build out the
 entire site contents every time. That's potentially quite a lot of
 parsing.
 
-Then there are some Ring middlewares that put values on the `request`
-to be used in rendering. This supports that. Read on:
+The `context` equals the `request` when it's served live as a Ring
+app, and as such contains the given `:uri`. Stasis' `export-pages`
+makes sure to add `:uri` to the context too.
+
+You can also pass in configuration options that is included on the
+`context`:
+
+```
+(def app (stasis/serve-pages get-pages {:my-config "options"}))
+
+(stasis/export-pages pages target-dir {:my-config "options"})
+```
+
+These will then be available when rendering your page.
+
+Finally, there are some Ring middlewares that put values on the
+request to be used in rendering. This supports that. Read on:
 
 ## But what about stylesheets, images and javascript?
 
@@ -168,7 +183,7 @@ Then I simply tell Optimus to export its assets into the same target
 dir as Stasis.
 
 Notice that I add `:optimus-assets` to the config map passed to
-`stasis/export-pages`, which will then be available on the `request`
+`stasis/export-pages`, which will then be available on the `context`
 map passed to each page-generating function. This mirrors what
 `optimus/wrap` does on the live Ring server, and allows for linking to
 assets by their original path.
