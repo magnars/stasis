@@ -4,7 +4,7 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "0.6.0"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "0.6.1"]` to `:dependencies` in your `project.clj`.
 
 ## Another static site framework? Why?
 
