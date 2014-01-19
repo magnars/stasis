@@ -1,4 +1,4 @@
-# <img align="right" src="stasis.png"> stasis
+# <img align="right" src="stasis.png"> Stasis
 
 A Clojure library of tools for developing static web sites.
 
@@ -112,25 +112,28 @@ To be fully live, instead pass `serve-pages` a `get-pages` function:
 No. That's potentially quite a lot of parsing for a large site.
 
 ```clj
-(def pages {"/index.html" (fn [context] (str "<h1>Welcome to " (:uri context) "!</h1>"))})
+(def pages
+  {"/index.html" (fn [context] (str "<h1>Welcome to " (:uri context) "!</h1>"))})
 ```
 
 Since we're dynamically building everything for each request, having a
 function around the contents means you don't have to build out the
 entire site contents every time.
 
-You might also want to pass along some context to each page. When it's
-served live as a Ring app the `context` equals the request, and as
-such contains the given `:uri`. Stasis' `export-pages` makes sure to
-add `:uri` to the context too.
+Stasis passes a `context` to each page. When it's served live as a
+Ring app the `context` is actually the Ring request, and as such
+contains the given `:uri`. Stasis' `export-pages` makes sure to add
+`:uri` to the context too.
 
 You can also pass in configuration options that is included on the
 `context`:
 
 ```clj
-(def app (stasis/serve-pages get-pages {:my-config "options"}))
+(defn my-config {:some "options"})
 
-(stasis/export-pages pages target-dir {:my-config "options"})
+(def app (stasis/serve-pages get-pages my-config))
+
+(stasis/export-pages pages target-dir my-config)
 ```
 
 These will then be available when rendering your page.
