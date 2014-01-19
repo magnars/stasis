@@ -233,7 +233,7 @@ You might have several sources for pages that need to be merged into
 the final `pages` map. Wouldn't it be nice if someone told you about
 conflicting URLs?
 
-```
+```clj
 (defn get-pages [content]
   (merge-page-sources
    {:person-pages (create-person-pages (:people content))
