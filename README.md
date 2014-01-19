@@ -42,7 +42,7 @@ to set up your blog. They might generate some code for you to tweak.
 Stasis works with a map of pages:
 
 ```clj
-(def pages {"/index.html" (fn [context] "<h1>Welcome!</h1>")})
+(def pages {"/index.html" "<h1>Welcome!</h1>"})
 ```
 
 The basic use case is to serve these live on a local server while
@@ -100,19 +100,25 @@ To be fully live, instead pass `serve-pages` a `get-pages` function:
 
 ```clj
 (defn get-pages []
-  (merge {"/index.html" (fn [context] "<h1>Welcome!</h1>")}
+  (merge {"/index.html" "<h1>Welcome!</h1>"}
          (get-product-pages)
          (get-people-pages)))
 
 (def app (stasis/serve-pages get-pages))
 ```
 
-#### What's with the `(fn [context] ...)` around page contents?
+#### Do I have to build every single page for each request?
+
+No. That's potentially quite a lot of parsing for a large site. You
+might also want to pass along some context to each page.
+
+```
+(def pages {"/index.html" (fn [context] (str "<h1>Welcome to " (:uri context) "!</h1>"))})
+```
 
 Since we're dynamically building everything for each request, having a
 function around the contents means you don't have to build out the
-entire site contents every time. That's potentially quite a lot of
-parsing.
+entire site contents every time.
 
 The `context` equals the `request` when it's served live as a Ring
 app, and as such contains the given `:uri`. Stasis' `export-pages`

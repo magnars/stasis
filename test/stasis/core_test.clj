@@ -7,7 +7,7 @@
 (fact
  "Stasis creates a Ring handler to serve your pages."
 
- (let [app (serve-pages {"/page.html" (fn [ctx] "The page contents")})]
+ (let [app (serve-pages {"/page.html" "The page contents"})]
 
    (app {:uri "/page.html"}) => {:status 200
                                  :body "The page contents"
@@ -21,12 +21,19 @@
  "You can pass in a `get-pages` function too, if you need to determine
   the set of pages dynamically and want them to be properly live."
 
- (let [get-pages (fn [] {"/page.html" (fn [ctx] "The page contents")})
+ (let [get-pages (fn [] {"/page.html" "The page contents"})
        app (serve-pages get-pages)]
 
    (app {:uri "/page.html"}) => {:status 200
                                  :body "The page contents"
                                  :headers {"Content-Type" "text/html"}}))
+
+(fact
+ "A page can be a function too, which is passed its context with :uri in."
+
+ (let [app (serve-pages {"/page.html" (fn [ctx] (str "I'm serving " (:uri ctx)))})]
+
+   (:body (app {:uri "/page.html"})) => "I'm serving /page.html"))
 
 (fact
  "If you use paths without .html, it serves them as directories with
@@ -59,7 +66,7 @@
  "Stasis exports pages to your directory of choice."
 
  (with-tmp-dir
-   (export-pages {"/page/index.html" (fn [ctx] "The contents")}
+   (export-pages {"/page/index.html" "The contents"}
                  tmp-dir)
    (slurp (str tmp-dir "/page/index.html")) => "The contents"))
 
