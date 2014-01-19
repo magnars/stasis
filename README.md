@@ -4,7 +4,7 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "0.5.0"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "0.5.1"]` to `:dependencies` in your `project.clj`.
 
 ## Another static site framework? Why?
 
@@ -42,7 +42,7 @@ to set up your blog. They might generate some code for you to tweak.
 Stasis works with a map of pages:
 
 ```clj
-(def pages {"/index.html" (fn [request] {:body "<h1>Welcome!</h1>"})})
+(def pages {"/index.html" (fn [request] "<h1>Welcome!</h1>")})
 ```
 
 The basic use case is to serve these live on a local server while
@@ -100,7 +100,7 @@ To be fully live, instead pass `serve-pages` a `get-pages` function:
 
 ```clj
 (defn get-pages []
-  (merge {"/index.html" (fn [request] {:body "<h1>Welcome!</h1>"})}
+  (merge {"/index.html" (fn [request] "<h1>Welcome!</h1>")}
          (get-product-pages)
          (get-people-pages)))
 

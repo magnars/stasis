@@ -17,7 +17,7 @@
 
 (defn- serve-page [get-page request]
   (-> {:status 200
-       :body (-> request get-page :body)}
+       :body (get-page request)}
       (assoc-if (.endsWith (:uri request) ".html") :headers {"Content-Type" "text/html"})))
 
 (def not-found
@@ -45,7 +45,6 @@
           path (str target-dir uri)]
       (create-folders path)
       (->> (get-page (assoc options :uri uri))
-           :body
            (spit path)))))
 
 (defn- delete-file-recursively [f]
