@@ -250,6 +250,16 @@ URL conflicts between :article-pages and :general-pages: #{"/about.html"}
 
 ## Q & A
 
+### Are there any full fledged examples to look at?
+
+Yeah, check these out:
+
+- [whattheemacsd.com](http://whattheemacsd.com/)
+  [(source)](https://github.com/magnars/what-the-emacsd)
+
+Got an open source site written in Stasis? Do let me know, and I'll
+add it here!
+
 ### Why won't my enlive templates update when I edit them?
 
 Your template definitions are reloaded only when you touch the
