@@ -169,7 +169,7 @@ started, here's an example:
 
 (defn export []
   (let [assets (optimizations/all (get-assets) {})]
-    (stasis/delete-directory! target-dir)
+    (stasis/empty-directory! target-dir)
     (optimus.export/save-assets assets target-dir)
     (stasis/export-pages (get-pages) target-dir {:optimus-assets assets})))
 ```

@@ -84,23 +84,23 @@
   (export-pages {"/folder/page.html" (fn [ctx] "Contents")} tmp-dir {})
 
   (fact
-   "You can't accidentaly delete a file with delete-directory!"
+   "You can't accidentaly empty a file with empty-directory!"
 
-   (delete-directory! (str tmp-dir "/folder/page.html"))
+   (empty-directory! (str tmp-dir "/folder/page.html"))
    => (throws Exception (str tmp-dir "/folder/page.html is not a directory.")))
 
   (fact
-   "But it's really easy removing an entire folder of files. Be careful."
+   "But it's really easy emptying an entire folder of files. Be careful."
 
-   (delete-directory! (str tmp-dir "/folder"))
+   (empty-directory! (str tmp-dir "/folder"))
 
    (io/as-file (str tmp-dir "/folder/page.html")) => #(not (.exists %))
-   (io/as-file (str tmp-dir "/folder")) => #(not (.exists %)))
+   (io/as-file (str tmp-dir "/folder")) => #(.exists %))
 
   (fact
-   "Deleting non-existing folders is a-o-k. It's all about the idempotence, baby."
+   "Emptying non-existing folders is a-o-k. It's, like, extra empty, dude."
 
-   (delete-directory! (str tmp-dir "/missing"))))
+   (empty-directory! (str tmp-dir "/missing"))))
 
 (with-files [["/texts/banana.txt" "Banana"]
              ["/texts/apple.txt" "Apple"]

@@ -29,12 +29,12 @@
   (let [get-pages (if (map? get-pages) ;; didn't pass a fn, just a map of pages
                     (fn [] get-pages)
                     get-pages)]
-   (fn [request]
-     (let [pages (normalize-page-uris (get-pages))
-           request (update-in request [:uri] normalize-uri)]
-       (if-let [get-page (pages (:uri request))]
-         (serve-page get-page (merge request options))
-         not-found)))))
+    (fn [request]
+      (let [pages (normalize-page-uris (get-pages))
+            request (update-in request [:uri] normalize-uri)]
+        (if-let [get-page (pages (:uri request))]
+          (serve-page get-page (merge request options))
+          not-found)))))
 
 (defn- create-folders [path]
   (.mkdirs (.getParentFile (io/file path))))
@@ -53,11 +53,12 @@
       (delete-file-recursively child)))
   (io/delete-file f))
 
-(defn delete-directory! [f]
-  (let [file (io/file f)]
-    (if (.isDirectory file)
-      (delete-file-recursively file)
-      (if (.exists file)
+(defn empty-directory! [f]
+  (let [f (io/file f)]
+    (if (.isDirectory f)
+      (doseq [child (.listFiles f)]
+        (delete-file-recursively child))
+      (if (.exists f)
         (throw (Exception. (str f " is not a directory.")))))))
 
 (defn slurp-directory [dir regexp]
