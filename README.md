@@ -250,6 +250,19 @@ URL conflicts between :article-pages and :general-pages: #{"/about.html"}
 
 ## Q & A
 
+### Can I avoid the .html endings on my pages?
+
+Yes. Stasis will handle URLs like `/projects/clojure/` by creating
+`projects` and `clojure` folders, and placing an `index.html` in it.
+
+Beware of the implications tho. You suddenly have multiple valid URLs
+to the same page, which is not good for your standing with Google.
+There's also the case of `/projects/clojure` vs `/projects/clojure/`
+that might trip you up.
+
+It'll probably take some wrangling of your web server to get this
+in pristine shape.
+
 ### Are there any full fledged examples to look at?
 
 Yeah, check these out:
