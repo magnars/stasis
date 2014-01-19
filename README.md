@@ -270,6 +270,10 @@ Yeah, check these out:
 - [whattheemacsd.com](http://whattheemacsd.com/)
   [(source)](https://github.com/magnars/what-the-emacsd)
 
+  Uses [Enlive](https://github.com/cgrand/enlive) for templating, and
+  [Optimus](https://github.com/magnars/optimus) for frontend
+  optimization.
+
 Got an open source site written in Stasis? Do let me know, and I'll
 add it here!
 
