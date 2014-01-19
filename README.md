@@ -74,11 +74,11 @@ To export pages, just give Stasis some pages and a target directory:
 
 ```clj
 (defn export []
-  (stasis/delete-directory! target-dir)
+  (stasis/empty-directory! target-dir)
   (stasis/export-pages pages target-dir))
 ```
 
-In this example we're also deleting the target-dir first, to ensure
+In this example we're also emptying the target-dir first, to ensure
 old pages are removed.
 
 When you've got this function, you can create an alias for leiningen:
@@ -112,7 +112,7 @@ To be fully live, instead pass `serve-pages` a `get-pages` function:
 No. That's potentially quite a lot of parsing for a large site. You
 might also want to pass along some context to each page.
 
-```
+```clj
 (def pages {"/index.html" (fn [context] (str "<h1>Welcome to " (:uri context) "!</h1>"))})
 ```
 
@@ -127,7 +127,7 @@ makes sure to add `:uri` to the context too.
 You can also pass in configuration options that is included on the
 `context`:
 
-```
+```clj
 (def app (stasis/serve-pages get-pages {:my-config "options"}))
 
 (stasis/export-pages pages target-dir {:my-config "options"})
@@ -249,7 +249,9 @@ And then call that in my `get-pages` function.
 ### How do I create an RSS feed for my blog?
 
 No worries, it's just a bit of XML. Here's a working snippet from
-whattheemacsd.com to create an Atom feed:
+[whattheemacsd.com](http://whattheemacsd.com/)
+[(source)](https://github.com/magnars/what-the-emacsd) to create an
+Atom feed:
 
 ```clj
 (ns what-the-emacsd.rss
