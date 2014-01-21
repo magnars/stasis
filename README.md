@@ -19,8 +19,8 @@ I want to
 - choose my own templating library
 - create my own damn stylesheets
 
-**Statis only offers a few functions that are pretty useful when
-creating static web sites.**
+**Statis offers a few functions that are pretty useful when creating
+static web sites.**
 
 No more. There are no batteries included.
 
@@ -70,7 +70,7 @@ and start it with `lein ring server-headless`.
 
 #### Exporting the pages
 
-To export pages, just give Stasis some pages and a target directory:
+To export, just give Stasis some pages and a target directory:
 
 ```clj
 (defn export []
@@ -118,14 +118,14 @@ No. That's potentially quite a lot of parsing for a large site.
 
 Since we're dynamically building everything for each request, having a
 function around the contents means you don't have to build out the
-entire site contents every time.
+entire site every time.
 
 Stasis passes a `context` to each page. When it's served live as a
 Ring app the `context` is actually the Ring request, and as such
 contains the given `:uri`. Stasis' `export-pages` makes sure to add
 `:uri` to the context too.
 
-You can also pass in configuration options that is included on the
+You can also pass in configuration options that are included on the
 `context`:
 
 ```clj
@@ -136,10 +136,10 @@ You can also pass in configuration options that is included on the
 (stasis/export-pages pages target-dir my-config)
 ```
 
-These will then be available when rendering your page.
+These are then available when rendering your page.
 
-Finally, there are some Ring middlewares that put values on the
-request to be used in rendering. This supports that. Read on:
+Finally, some Ring middlewares put values on the request to be used in
+rendering. This supports that. Read on:
 
 ## But what about stylesheets, images and javascript?
 
@@ -330,6 +330,21 @@ an Atom feed:
 If this seems like too much, well, maybe you're using the wrong static
 site library. But anyway, there's even a library to create RSS for you
 here: [clj-rss](https://github.com/yogthos/clj-rss).
+
+## Contribute
+
+Yes, please do. And add tests for your feature or fix, or I'll
+certainly break it later.
+
+#### Running the tests
+
+`lein midje` will run all tests.
+
+`lein midje namespace.*` will run only tests beginning with "namespace.".
+
+`lein midje :autotest` will run all the tests indefinitely. It sets up a
+watcher on the code files. If they change, only the relevant tests will be
+run again.
 
 ## License
 
