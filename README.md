@@ -346,6 +346,23 @@ If this seems like too much, well, maybe you're using the wrong static
 site library. But anyway, there's even a library to create RSS for you
 here: [clj-rss](https://github.com/yogthos/clj-rss).
 
+### Is Stasis stable?
+
+It's still on a 0.x release, but I feel the API has jelled enough now
+to open source it. I don't expect any major changes at this point.
+I'll likely push it to 1.0 at the end of January.
+
+### Again, why not use one of the existing frameworks?
+
+I think the existing frameworks are great if they fit your style.
+Stasis imposes no styles. There are very few decisions made for you -
+no markdown vs asciidoc, no enlive vs hiccup. No configuration
+options. You have to make them.
+
+So, yeah ... I think Stasis would be a great starting point if you
+want to create the 6th static site framework to go in that list at the
+top. :-)
+
 ## Contribute
 
 Yes, please do. And add tests for your feature or fix, or I'll
