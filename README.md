@@ -150,9 +150,9 @@ In its simplest form, you can add some JavaScript and CSS to the map
 of pages. It'll be served and exported just fine. Which is good if you
 want to dynamically create some JSON, for instance.
 
-But for truly static assets, I recommend a frontend optimization
-library. You can use any asset lib that hooks into Ring and lets you
-export the optimized assets to disk.
+But for your CSS, JavaScript and images, I recommend a frontend
+optimization library. You can use any asset lib that hooks into Ring
+and lets you export the optimized assets to disk.
 
 I use [Optimus](https://github.com/magnars/optimus). To get you
 started, here's an example:
@@ -177,10 +177,11 @@ started, here's an example:
              wrap-content-type))
 
 (defn export []
-  (let [assets (optimizations/all (get-assets) {})]
+  (let [assets (optimizations/all (get-assets) {})
+        pages (get-pages)]
     (stasis/empty-directory! target-dir)
     (optimus.export/save-assets assets target-dir)
-    (stasis/export-pages (get-pages) target-dir {:optimus-assets assets})))
+    (stasis/export-pages pages target-dir {:optimus-assets assets})))
 ```
 
 I create a function to get all the assets, and then add the Optimus
@@ -247,15 +248,18 @@ the final `pages` map. Wouldn't it be nice if someone told you about
 conflicting URLs?
 
 ```clj
-(defn get-pages [content]
+(defn create-pages [content]
   (merge-page-sources
    {:person-pages (create-person-pages (:people content))
     :article-pages (create-article-pages (:articles content))
     :general-pages (create-general-pages content)}))
+
+(defn get-pages []
+  (create-pages (load-content)))
 ```
 
-The values in this map should be the page-maps to merge. The keys in
-this map are only used for error reporting:
+So `merge-page-sources` takes a map. The values are the page-maps to
+merge. The keys in the map are only used for error reporting:
 
 ```
 URL conflicts between :article-pages and :general-pages: #{"/about.html"}
