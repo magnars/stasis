@@ -39,7 +39,8 @@ to set up your blog. They might generate some code for you to tweak.
 
 ## Usage
 
-Stasis works with a map of pages:
+The core of Stasis is two functions: `serve-pages` and `export-pages`.
+Both take a map from path to contents:
 
 ```clj
 (def pages {"/index.html" "<h1>Welcome!</h1>"})
