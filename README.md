@@ -61,9 +61,11 @@ Stasis can create a Ring handler to serve your pages.
 (def app (stasis/serve-pages pages))
 ```
 
-Like with any Ring app, you point to your `app` in `project.clj`:
+Like with any Ring app, add the `lein-ring` plugin and point Ring to your
+`app` in `project.clj`.
 
 ```clj
+:plugins [[lein-ring "0.8.7"]]
 :ring {:handler example/app}
 ```
 
