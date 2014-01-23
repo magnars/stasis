@@ -19,7 +19,7 @@ I want to
 - choose my own templating library
 - create my own damn stylesheets
 
-**Statis offers a few functions that are pretty useful when creating
+**Statis just offers a few functions that are useful when creating
 static web sites.**
 
 No more. There are no batteries included.
@@ -35,7 +35,7 @@ a blog, you should take a look at these:
 
 They generally come with a folder where you put your blog posts in
 some templating language, and a set of configuration options about how
-to set up your blog. They might generate some code for you to tweak.
+to set up your blog. They often generate code for you to tweak.
 
 ## Usage
 
