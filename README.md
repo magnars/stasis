@@ -230,6 +230,16 @@ Here's another example:
 This matches all edn-files in `resources/products/`, slurps in their
 contents and transforms it to a list of Clojure data structures.
 
+**Fun fact:** This is a valid code:
+
+```clj
+(def app (serve-pages (slurp-directory "resources/pages/" #"\.html$")))
+```
+
+It would serve all .html files in that folder, matching the URL
+structure to files on disk. Not the most useful app ever, maybe,
+unless you combine it with:
+
 ### `merge-page-sources`
 
 You might have several sources for pages that need to be merged into
