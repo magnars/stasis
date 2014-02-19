@@ -46,6 +46,14 @@
    (:body (app {:uri "/page"})) => "I'm serving /page/index.html"))
 
 (fact
+ "If you use paths with strange characters, like { and }, it transparently
+  decodes incoming URLs"
+
+ (let [app (serve-pages {"/page/{thing-a-majig}" (fn [ctx] (str "I'm serving " (:uri ctx)))})]
+
+   (:body (app {:uri "/page/%7Bthing-a-majig%7D"})) => "I'm serving /page/{thing-a-majig}/index.html"))
+
+(fact
  "You can pass along config options to serve-pages that will be
   included on each request."
 

@@ -1,13 +1,15 @@
 (ns stasis.core
   (:require [clojure.java.io :as io]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [ring.util.codec :refer [url-decode]]))
 
 (defn- normalize-uri [#^String uri]
-  (cond
-   (.endsWith uri ".html") uri
-   (.endsWith uri "/") (str uri "index.html")
-   (re-find #"/[^./]+$" uri) (str uri "/index.html")
-   :else uri))
+  (let [decoded-uri (url-decode uri)]
+      (cond
+       (.endsWith decoded-uri ".html") decoded-uri
+       (.endsWith decoded-uri "/") (str decoded-uri "index.html")
+       (re-find #"/[^./]+$" decoded-uri) (str decoded-uri "/index.html")
+       :else decoded-uri)))
 
 (defn- normalize-page-uris [pages]
   (zipmap (map normalize-uri (keys pages))
