@@ -120,7 +120,8 @@
 (with-files [["/texts/banana.txt" "Banana"]
              ["/texts/apple.txt" "Apple"]
              ["/texts/fruit.txt" "Fruit"]
-             ["/texts/irrelevant.md" "Left out"]]
+             ["/texts/irrelevant.md" "Left out"]
+             ["/texts/.#emacs.txt" "Temp files are cool beans"]]
 
   (fact (slurp-directory (str tmp-dir "/texts") #"\.txt$")
         => {"/banana.txt" "Banana"

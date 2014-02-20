@@ -1,7 +1,9 @@
 (ns stasis.core
   (:require [clojure.java.io :as io]
             [clojure.set :as set]
-            [ring.util.codec :refer [url-decode]]))
+            [clojure.string :as str]
+            [ring.util.codec :refer [url-decode]])
+  (:import [java.io File]))
 
 (defn- normalize-uri [#^String uri]
   (let [decoded-uri (url-decode uri)]
@@ -68,10 +70,20 @@
       (if (.exists f)
         (throw (Exception. (str f " is not a directory.")))))))
 
+(defn- just-the-filename [#^String path]
+  (last (str/split path (re-pattern (java.io.File/separator)))))
+
+(defn- emacs-file-artefact? [#^File path]
+  (let [filename (just-the-filename (.getPath path))]
+    (or (.startsWith filename ".#")
+        (and (.startsWith filename "#")
+             (.endsWith filename "#")))))
+
 (defn slurp-directory [dir regexp]
   (let [dir (io/as-file dir)
         path-from-dir #(subs (.getPath %) (count (.getPath dir)))]
     (->> (file-seq dir)
+         (remove emacs-file-artefact?)
          (filter #(re-find regexp (path-from-dir %)))
          (map (juxt path-from-dir slurp))
          (into {}))))
