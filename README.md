@@ -359,7 +359,7 @@ I'll likely push it to 1.0 at the end of January.
 I think the existing frameworks are great if they fit your style.
 Stasis imposes no styles. There are very few decisions made for you -
 no markdown vs asciidoc, no enlive vs hiccup. No configuration
-options. You have to make them.
+options. You have to make those yourself.
 
 So, yeah ... I think Stasis would be a great starting point if you
 want to create the 6th static site framework to go in that list at the
