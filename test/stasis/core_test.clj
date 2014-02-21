@@ -157,3 +157,9 @@
                                            "/finnjoh.html" ""}
                            :general-pages {"/people.html" ""}})
       => (throws Exception "URL conflicts between :article-pages and :person-pages: #{\"/magnars.html\" \"/finnjoh.html\"}"))
+
+(fact "It detects clashes for non-normalized URLs too."
+
+      (merge-page-sources {:general-pages {"/" ""}
+                           :article-pages {"/index.html" ""}})
+      => (throws Exception "URL conflicts between :article-pages and :general-pages: #{\"/index.html\"}"))

@@ -92,8 +92,8 @@
   (doseq [k1 (keys pages)
           k2 (keys pages)]
     (when-not (= k1 k2)
-      (let [collisions (set/intersection (set (keys (k1 pages)))
-                                         (set (keys (k2 pages))))]
+      (let [collisions (set/intersection (set (map normalize-uri (keys (k1 pages))))
+                                         (set (map normalize-uri (keys (k2 pages)))))]
         (when-not (empty? collisions)
           (throw (Exception. (str "URL conflicts between " k1 " and " k2 ": " collisions)))))))
   pages)
