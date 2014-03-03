@@ -308,6 +308,15 @@ Yeah, check these out:
   [Clygments](https://github.com/bfontaine/clygments)) for code
   highlighting.
 
+- [atlantis.net/blog](http://atlanis.net/blog/) [(source)](https://github.com/emallson/atlanis.net-blog)
+
+  This is pretty cool: The blog posts are written in
+  [org-mode](http://orgmode.org/), converted to HTML with Emacs in
+  batch mode, and wrapped in a layout with
+  [Enlive](https://github.com/cgrand/enlive). Also uses
+  [Optimus](https://github.com/magnars/optimus) for frontend
+  optimization.
+
 Got an open source site written in Stasis? Do let me know, and I'll
 add it here!
 
