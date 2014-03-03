@@ -4,7 +4,11 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "0.7.1"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "1.0.0"]` to `:dependencies` in your `project.clj`.
+
+Please note that this project uses
+[Semantic Versioning](http://semver.org/). There will be no breaking
+changes without a major version increase.
 
 ## Another static site framework? Why?
 
@@ -17,7 +21,6 @@ I want to
 - code my own pages
 - set up my own configuration
 - choose my own templating library
-- create my own damn stylesheets
 
 **Statis just offers a few functions that are useful when creating
 static web sites.**
@@ -350,9 +353,8 @@ here: [clj-rss](https://github.com/yogthos/clj-rss).
 
 ### Is Stasis stable?
 
-It's still on a 0.x release, but I feel the API has jelled enough now
-to open source it. I don't expect any major changes at this point.
-I'll likely push it to 1.0 at the end of January.
+Yes. This project uses [Semantic Versioning](http://semver.org/).
+There will be no breaking changes without a major version increase.
 
 ### Again, why not use one of the existing frameworks?
 
