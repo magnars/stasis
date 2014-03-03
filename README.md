@@ -297,6 +297,17 @@ Yeah, check these out:
   [Optimus](https://github.com/magnars/optimus) for frontend
   optimization.
 
+- [sinonjs.org](http://sinonjs.org) [(source)](https://github.com/sinonjs/sinon-docs)
+
+  Uses a combination of
+  [Hiccup](https://github.com/weavejester/hiccup),
+  [Enlive](https://github.com/cgrand/enlive) and Markdown (via
+  [Cegdown](https://github.com/Raynes/cegdown)) to build the pages,
+  [Optimus](https://github.com/magnars/optimus) for frontend
+  optimization, and Pygments (via
+  [Clygments](https://github.com/bfontaine/clygments)) for code
+  highlighting.
+
 Got an open source site written in Stasis? Do let me know, and I'll
 add it here!
 
