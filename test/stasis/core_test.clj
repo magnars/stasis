@@ -163,3 +163,10 @@
       (merge-page-sources {:general-pages {"/" ""}
                            :article-pages {"/index.html" ""}})
       => (throws Exception "URL conflicts between :article-pages and :general-pages: #{\"/index.html\"}"))
+
+(fact "It loads edn files"
+
+      (load-edn "valid.edn") => {:valid "EDN"}
+      (load-edn "invalid.edn") => (throws Exception)
+      (load-edn "multiple-root-forms.edn") => (throws Exception "File multiple-root-forms.edn should contain only a single root form, but had 2 forms.")
+      (load-edn "non-existent.edn") => (throws Exception))
