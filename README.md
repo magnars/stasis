@@ -317,6 +317,12 @@ Yeah, check these out:
   [Optimus](https://github.com/magnars/optimus) for frontend
   optimization.
 
+- [augustl.com](http://augustl.com) [(source)](https://github.com/augustl/augustl.com)
+
+  Uses a home brewed HTML based templating system, Pygments (via
+  [Clygments](https://github.com/bfontaine/clygments)) for syntax highlighting,
+  and [Optimus](https://github.com/magnars/optimus) for the asset pipeline.
+
 Got an open source site written in Stasis? Do let me know, and I'll
 add it here!
 
