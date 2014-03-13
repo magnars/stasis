@@ -8,4 +8,5 @@
                                   [print-foo "0.4.2"]
                                   [test-with-files "0.1.0"]]
                    :plugins [[lein-midje "3.1.3"]]
-                   :source-paths ["dev"]}})
+                   :source-paths ["dev"]
+                   :resource-paths ["test/resources"]}})

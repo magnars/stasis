@@ -2,7 +2,7 @@
   (:require [stasis.core :refer :all]
             [midje.sweet :refer :all]
             [clojure.java.io :as io]
-            [test-with-files.core :refer [with-files with-tmp-dir tmp-dir]]))
+            [test-with-files.core :refer [with-files with-tmp-dir tmp-dir public-dir]]))
 
 (fact
  "Stasis creates a Ring handler to serve your pages."
@@ -163,3 +163,14 @@
       (merge-page-sources {:general-pages {"/" ""}
                            :article-pages {"/index.html" ""}})
       => (throws Exception "URL conflicts between :article-pages and :general-pages: #{\"/index.html\"}"))
+
+(with-files [["/valid.edn" "{:valid \"EDN\"}"]
+             ["/invalid.edn" "{:syntactically \"Broken\""]
+             ["/multiple-root-forms.edn" "{:first \"Form\"} #{:second}"]]
+
+  (fact "It loads edn files"
+
+        (load-edn (str public-dir "/valid.edn")) => {:valid "EDN"}
+        (load-edn (str public-dir "/invalid.edn")) => (throws Exception)
+        (load-edn (str public-dir "/multiple-root-forms.edn")) => (throws Exception (str "File " public-dir "/multiple-root-forms.edn should contain only a single root form, but had 2 forms."))
+        (load-edn (str public-dir "/non-existent.edn")) => (throws Exception)))
