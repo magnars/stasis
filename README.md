@@ -288,7 +288,11 @@ in pristine shape.
 
 ### Are there any full fledged examples to look at?
 
-Yeah, check these out:
+[Christian Johansen](https://github.com/cjohansen/) wrote
+[Building static sites in Clojure with Stasis](http://cjohansen.no/building-static-sites-in-clojure-with-stasis),
+which is an excellent starting point.
+
+If you just want some code to look at, check these out:
 
 - [whattheemacsd.com](http://whattheemacsd.com/)
   [(source)](https://github.com/magnars/what-the-emacsd)
