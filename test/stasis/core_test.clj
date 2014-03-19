@@ -163,3 +163,9 @@
       (merge-page-sources {:general-pages {"/" ""}
                            :article-pages {"/index.html" ""}})
       => (throws Exception "URL conflicts between :article-pages and :general-pages: #{\"/index.html\"}"))
+
+(fact "It forces pages paths to be absolute paths."
+      (serve-pages {"foo.html" "bar"})
+      => (throws Exception "Your pages must be absolute paths")
+      (export-pages {"foo.html" "bar"} nil)
+      => (throws Exception "Your pages must be absolute paths"))

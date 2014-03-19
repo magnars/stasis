@@ -27,6 +27,10 @@
                (get-page request))}
       (assoc-if (.endsWith (:uri request) ".html") :headers {"Content-Type" "text/html"})))
 
+(defn pages-are-absolute
+  [pages-map]
+  (every? #(re-find #"^/" %) (keys pages-map)))
+
 (def not-found
   {:status 404
    :body "<h1>Page not found</h1>"
@@ -35,10 +39,12 @@
 (defn serve-pages [get-pages & [options]]
   (let [get-pages (if (map? get-pages) ;; didn't pass a fn, just a map of pages
                     (fn [] get-pages)
-                    get-pages)]
+                    get-pages)
+        pages (normalize-page-uris (get-pages))]
+    (when-not (pages-are-absolute pages)
+      (throw (ex-info "Your pages must be absolute paths" {:pages pages})))
     (fn [request]
-      (let [pages (normalize-page-uris (get-pages))
-            request (update-in request [:uri] normalize-uri)]
+      (let [request (update-in request [:uri] normalize-uri)]
         (if-let [get-page (pages (:uri request))]
           (serve-page get-page (merge request options))
           not-found)))))
@@ -47,9 +53,9 @@
   (.mkdirs (.getParentFile (io/file path))))
 
 (defn export-pages [pages target-dir & [options]]
-  (let [target-dir (if-not (re-find #"/$" target-dir)
-                     (str target-dir "/")
-                     target-dir)]
+  (when-not (pages-are-absolute pages)
+      (throw (ex-info "Your pages must be absolute paths" {:pages pages})))
+  (let [target-dir (str/replace target-dir #"/$" "")]
     (doseq [[uri get-page] pages]
       (let [uri (normalize-uri uri)
             path (str target-dir uri)]
