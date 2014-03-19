@@ -47,14 +47,17 @@
   (.mkdirs (.getParentFile (io/file path))))
 
 (defn export-pages [pages target-dir & [options]]
-  (doseq [[uri get-page] pages]
-    (let [uri (normalize-uri uri)
-          path (str target-dir uri)]
-      (create-folders path)
-      (->> (if (string? get-page)
-             get-page ;; didn't pass a fn, just the page contents
-             (get-page (assoc options :uri uri)))
-           (spit path)))))
+  (let [target-dir (if-not (re-find #"/$" target-dir)
+                     (str target-dir "/")
+                     target-dir)]
+    (doseq [[uri get-page] pages]
+      (let [uri (normalize-uri uri)
+            path (str target-dir uri)]
+        (create-folders path)
+        (->> (if (string? get-page)
+               get-page ;; didn't pass a fn, just the page contents
+               (get-page (assoc options :uri uri)))
+             (spit path))))))
 
 (defn- delete-file-recursively [f]
   (if (.isDirectory f)
