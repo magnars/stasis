@@ -27,9 +27,15 @@
                (get-page request))}
       (assoc-if (.endsWith (:uri request) ".html") :headers {"Content-Type" "text/html"})))
 
-(defn pages-are-absolute
+(defn validate-pages
+  "Validates that the paths (the keys) of the pages are absolute paths,
+so that ring can serve them properly."
   [pages-map]
-  (every? #(re-find #"^/" %) (keys pages-map)))
+  (let [errors
+        (remove #(re-find #"^/" %) (keys pages-map))]
+    (if (seq errors)
+      [:error errors]
+      [:success nil])))
 
 (def not-found
   {:status 404
@@ -40,9 +46,12 @@
   (let [get-pages (if (map? get-pages) ;; didn't pass a fn, just a map of pages
                     (fn [] get-pages)
                     get-pages)
-        pages (normalize-page-uris (get-pages))]
-    (when-not (pages-are-absolute pages)
-      (throw (ex-info "Your pages must be absolute paths" {:pages pages})))
+        pages (normalize-page-uris (get-pages))
+        [error-msg errors] (validate-pages pages)]
+    (when (= :error error-msg)
+      (throw (ex-info (str "The following pages must have absolute paths: "
+                           (pr-str errors))
+                      {:errors errors})))
     (fn [request]
       (let [request (update-in request [:uri] normalize-uri)]
         (if-let [get-page (pages (:uri request))]
@@ -53,9 +62,12 @@
   (.mkdirs (.getParentFile (io/file path))))
 
 (defn export-pages [pages target-dir & [options]]
-  (when-not (pages-are-absolute pages)
-      (throw (ex-info "Your pages must be absolute paths" {:pages pages})))
-  (let [target-dir (str/replace target-dir #"/$" "")]
+  (let [target-dir (when target-dir (str/replace target-dir #"/$" ""))
+        [error-msg errors] (validate-pages pages)]
+    (when (= :error error-msg)
+      (throw (ex-info (str "The following pages must have absolute paths: "
+                           (pr-str errors))
+                      {:errors errors})))
     (doseq [[uri get-page] pages]
       (let [uri (normalize-uri uri)
             path (str target-dir uri)]

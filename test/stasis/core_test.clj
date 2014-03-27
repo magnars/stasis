@@ -166,6 +166,6 @@
 
 (fact "It forces pages paths to be absolute paths."
       (serve-pages {"foo.html" "bar"})
-      => (throws Exception "Your pages must be absolute paths")
+      => (throws Exception "The following pages must have absolute paths: (\"foo.html\")")
       (export-pages {"foo.html" "bar"} nil)
-      => (throws Exception "Your pages must be absolute paths"))
+      => (throws Exception "The following pages must have absolute paths: (\"foo.html\")"))
