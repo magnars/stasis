@@ -27,6 +27,16 @@
                (get-page request))}
       (assoc-if (.endsWith (:uri request) ".html") :headers {"Content-Type" "text/html"})))
 
+(defn validate-pages
+  "Validates that the paths (the keys) of the pages are absolute paths,
+so that ring can serve them properly."
+  [pages-map]
+  (let [errors
+        (remove #(re-find #"^/" %) (keys pages-map))]
+    (if (seq errors)
+      [:error errors]
+      [:success nil])))
+
 (def not-found
   {:status 404
    :body "<h1>Page not found</h1>"
@@ -35,10 +45,15 @@
 (defn serve-pages [get-pages & [options]]
   (let [get-pages (if (map? get-pages) ;; didn't pass a fn, just a map of pages
                     (fn [] get-pages)
-                    get-pages)]
+                    get-pages)
+        pages (normalize-page-uris (get-pages))
+        [error-msg errors] (validate-pages pages)]
+    (when (= :error error-msg)
+      (throw (ex-info (str "The following pages must have absolute paths: "
+                           (pr-str errors))
+                      {:errors errors})))
     (fn [request]
-      (let [pages (normalize-page-uris (get-pages))
-            request (update-in request [:uri] normalize-uri)]
+      (let [request (update-in request [:uri] normalize-uri)]
         (if-let [get-page (pages (:uri request))]
           (serve-page get-page (merge request options))
           not-found)))))
@@ -47,14 +62,20 @@
   (.mkdirs (.getParentFile (io/file path))))
 
 (defn export-pages [pages target-dir & [options]]
-  (doseq [[uri get-page] pages]
-    (let [uri (normalize-uri uri)
-          path (str target-dir uri)]
-      (create-folders path)
-      (->> (if (string? get-page)
-             get-page ;; didn't pass a fn, just the page contents
-             (get-page (assoc options :uri uri)))
-           (spit path)))))
+  (let [target-dir (when target-dir (str/replace target-dir #"/$" ""))
+        [error-msg errors] (validate-pages pages)]
+    (when (= :error error-msg)
+      (throw (ex-info (str "The following pages must have absolute paths: "
+                           (pr-str errors))
+                      {:errors errors})))
+    (doseq [[uri get-page] pages]
+      (let [uri (normalize-uri uri)
+            path (str target-dir uri)]
+        (create-folders path)
+        (->> (if (string? get-page)
+               get-page ;; didn't pass a fn, just the page contents
+               (get-page (assoc options :uri uri)))
+             (spit path))))))
 
 (defn- delete-file-recursively [f]
   (if (.isDirectory f)
