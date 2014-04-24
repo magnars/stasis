@@ -27,6 +27,9 @@
     path
     (.replaceAll path fsep-regex "/")))
 
+(defn- get-path [#^File path]
+  (normalize-path (.getPath path)))
+
 (defn- assoc-if [m assoc? k v]
   (if assoc? (assoc m k v) m))
 
@@ -99,20 +102,21 @@ so that ring can serve them properly."
       (doseq [child (.listFiles f)]
         (delete-file-recursively child))
       (if (.exists f)
-        (throw (Exception. (str (normalize-path (str f)) " is not a directory.")))))))
+        (throw (Exception. (str (get-path f) " is not a directory.")))))))
 
 (defn- just-the-filename [#^String path]
   (last (str/split path #"/")))
 
 (defn- emacs-file-artefact? [#^File path]
-  (let [filename (just-the-filename (normalize-path (.getPath path)))]
+  (let [filename (just-the-filename (get-path path))]
     (or (.startsWith filename ".#")
         (and (.startsWith filename "#")
              (.endsWith filename "#")))))
 
 (defn slurp-directory [dir regexp]
   (let [dir (io/as-file dir)
-        path-from-dir #(subs (normalize-path (.getPath %)) (count (normalize-path (.getPath dir))))]
+        path-len (count (get-path dir))
+        path-from-dir #(subs (get-path %) path-len)]
     (->> (file-seq dir)
          (remove emacs-file-artefact?)
          (filter #(re-find regexp (path-from-dir %)))
