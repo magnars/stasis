@@ -397,6 +397,14 @@ So, yeah ... I think Stasis would be a great starting point if you
 want to create the 6th static site framework to go in that list at the
 top. :-)
 
+## Contributors
+
+- [Oak Nauhygon](nauhygon) fixed an issue with running Stasis on Windows.
+- [Cesar BP](cesarbp) made sure that page URLs are absolute.
+- [Christian Johansen](cjohansen) handled encoded URIs coming in to the local server.
+
+Thanks!
+
 ## Contribute
 
 Yes, please do. And add tests for your feature or fix, or I'll
