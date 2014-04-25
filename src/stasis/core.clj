@@ -3,7 +3,8 @@
             [clojure.set :as set]
             [clojure.string :as str]
             [ring.util.codec :refer [url-decode]])
-  (:import [java.io File]))
+  (:import [java.io File]
+           [java.util.regex Pattern]))
 
 (defn- normalize-uri [#^String uri]
   (let [decoded-uri (url-decode uri)]
@@ -16,6 +17,18 @@
 (defn- normalize-page-uris [pages]
   (zipmap (map normalize-uri (keys pages))
           (vals pages)))
+
+(def fsep (java.io.File/separator))
+
+(def fsep-regex (java.util.regex.Pattern/quote fsep))
+
+(defn- normalize-path [#^String path]
+  (if (= fsep "/")
+    path
+    (.replaceAll path fsep-regex "/")))
+
+(defn- get-path [#^File path]
+  (normalize-path (.getPath path)))
 
 (defn- assoc-if [m assoc? k v]
   (if assoc? (assoc m k v) m))
@@ -89,20 +102,21 @@ so that ring can serve them properly."
       (doseq [child (.listFiles f)]
         (delete-file-recursively child))
       (if (.exists f)
-        (throw (Exception. (str f " is not a directory.")))))))
+        (throw (Exception. (str (get-path f) " is not a directory.")))))))
 
 (defn- just-the-filename [#^String path]
-  (last (str/split path (re-pattern (java.io.File/separator)))))
+  (last (str/split path #"/")))
 
 (defn- emacs-file-artefact? [#^File path]
-  (let [filename (just-the-filename (.getPath path))]
+  (let [filename (just-the-filename (get-path path))]
     (or (.startsWith filename ".#")
         (and (.startsWith filename "#")
              (.endsWith filename "#")))))
 
 (defn slurp-directory [dir regexp]
   (let [dir (io/as-file dir)
-        path-from-dir #(subs (.getPath %) (count (.getPath dir)))]
+        path-len (count (get-path dir))
+        path-from-dir #(subs (get-path %) path-len)]
     (->> (file-seq dir)
          (remove emacs-file-artefact?)
          (filter #(re-find regexp (path-from-dir %)))
