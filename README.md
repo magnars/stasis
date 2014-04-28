@@ -247,6 +247,12 @@ It would serve all .html files in that folder, matching the URL
 structure to files on disk. Not the most useful app ever, maybe,
 unless you combine it with:
 
+### `slurp-resources`
+
+Just like `slurp-directory`, except it reads off the class path
+instead of directly from disk. For performance reasons the `.m2`
+folder is excluded. Open an issue if that causes you pain.
+
 ### `merge-page-sources`
 
 You might have several sources for pages that need to be merged into

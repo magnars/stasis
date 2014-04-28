@@ -2,17 +2,18 @@
   (:require [clojure.java.io :as io]
             [clojure.set :as set]
             [clojure.string :as str]
+            [stasis.class-path :refer [file-paths-on-class-path]]
             [ring.util.codec :refer [url-decode]])
   (:import [java.io File]
            [java.util.regex Pattern]))
 
 (defn- normalize-uri [#^String uri]
   (let [decoded-uri (url-decode uri)]
-      (cond
-       (.endsWith decoded-uri ".html") decoded-uri
-       (.endsWith decoded-uri "/") (str decoded-uri "index.html")
-       (re-find #"/[^./]+$" decoded-uri) (str decoded-uri "/index.html")
-       :else decoded-uri)))
+    (cond
+     (.endsWith decoded-uri ".html") decoded-uri
+     (.endsWith decoded-uri "/") (str decoded-uri "index.html")
+     (re-find #"/[^./]+$" decoded-uri) (str decoded-uri "/index.html")
+     :else decoded-uri)))
 
 (defn- normalize-page-uris [pages]
   (zipmap (map normalize-uri (keys pages))
@@ -107,21 +108,37 @@ so that ring can serve them properly."
 (defn- just-the-filename [#^String path]
   (last (str/split path #"/")))
 
-(defn- emacs-file-artefact? [#^File path]
-  (let [filename (just-the-filename (get-path path))]
+(defn- emacs-file-artefact? [^String path]
+  (let [filename (just-the-filename path)]
     (or (.startsWith filename ".#")
         (and (.startsWith filename "#")
              (.endsWith filename "#")))))
+
+(defn- emacs-file? [^File file]
+  (-> file get-path emacs-file-artefact?))
 
 (defn slurp-directory [dir regexp]
   (let [dir (io/as-file dir)
         path-len (count (get-path dir))
         path-from-dir #(subs (get-path %) path-len)]
     (->> (file-seq dir)
-         (remove emacs-file-artefact?)
+         (remove emacs-file?)
          (filter #(re-find regexp (path-from-dir %)))
          (map (juxt path-from-dir slurp))
          (into {}))))
+
+(defn- chop-up-to [^String prefix ^String s]
+  (subs s (+ (.indexOf s prefix)
+             (count prefix))))
+
+(defn slurp-resources [dir regexp]
+  (->> (file-paths-on-class-path)
+       (filter (fn [^String s] (.contains s (str dir "/"))))
+       (filter #(re-find regexp %))
+       (remove #(emacs-file-artefact? (chop-up-to dir %)))
+       (map (juxt #(chop-up-to dir %)
+                  #(slurp (io/resource %))))
+       (into {})))
 
 (defn- guard-against-collisions [pages]
   (doseq [k1 (keys pages)

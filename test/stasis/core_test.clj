@@ -2,7 +2,7 @@
   (:require [stasis.core :refer :all]
             [midje.sweet :refer :all]
             [clojure.java.io :as io]
-            [test-with-files.core :refer [with-files with-tmp-dir tmp-dir]]))
+            [test-with-files.core :refer [with-files with-tmp-dir tmp-dir public-dir]]))
 
 (fact
  "Stasis creates a Ring handler to serve your pages."
@@ -124,6 +124,11 @@
              ["/texts/.#emacs.txt" "Temp files are cool beans"]]
 
   (fact (slurp-directory (str tmp-dir "/texts") #"\.txt$")
+        => {"/banana.txt" "Banana"
+            "/apple.txt" "Apple"
+            "/fruit.txt" "Fruit"})
+
+  (fact (slurp-resources (str public-dir "/texts") #"\.txt$")
         => {"/banana.txt" "Banana"
             "/apple.txt" "Apple"
             "/fruit.txt" "Fruit"}))
