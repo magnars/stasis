@@ -4,7 +4,7 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "1.0.1"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "1.1.0"]` to `:dependencies` in your `project.clj`.
 
 Please note that this project uses
 [Semantic Versioning](http://semver.org/). There will be no breaking
