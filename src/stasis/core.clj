@@ -41,33 +41,30 @@
                (get-page request))}
       (assoc-if (.endsWith (:uri request) ".html") :headers {"Content-Type" "text/html"})))
 
-(defn validate-pages
-  "Validates that the paths (the keys) of the pages are absolute paths,
-so that ring can serve them properly."
-  [pages-map]
-  (let [errors
-        (remove #(re-find #"^/" %) (keys pages-map))]
-    (if (seq errors)
-      [:error errors]
-      [:success nil])))
-
 (def not-found
   {:status 404
    :body "<h1>Page not found</h1>"
    :headers {"Content-Type" "text/html"}})
 
+(defn- ensure-absolute-paths [pages]
+  "Validates that the paths (the keys) of the pages are absolute paths,
+   so that ring can serve them properly."
+  (let [errors (->> pages keys
+                    (remove #(re-find #"^/" %)))]
+    (when (seq errors)
+      (throw (ex-info (str "The following pages must have absolute paths: "
+                           (pr-str errors))
+                      {:errors errors})))))
+
 (defn serve-pages [get-pages & [options]]
   (let [get-pages (if (map? get-pages) ;; didn't pass a fn, just a map of pages
                     (fn [] get-pages)
-                    get-pages)
-        pages (normalize-page-uris (get-pages))
-        [error-msg errors] (validate-pages pages)]
-    (when (= :error error-msg)
-      (throw (ex-info (str "The following pages must have absolute paths: "
-                           (pr-str errors))
-                      {:errors errors})))
+                    get-pages)]
+    (ensure-absolute-paths (get-pages))
     (fn [request]
-      (let [request (update-in request [:uri] normalize-uri)]
+      (let [request (update-in request [:uri] normalize-uri)
+            pages (normalize-page-uris (get-pages))]
+        (ensure-absolute-paths pages)
         (if-let [get-page (pages (:uri request))]
           (serve-page get-page (merge request options))
           not-found)))))
@@ -76,12 +73,8 @@ so that ring can serve them properly."
   (.mkdirs (.getParentFile (io/file path))))
 
 (defn export-pages [pages target-dir & [options]]
-  (let [target-dir (when target-dir (str/replace target-dir #"/$" ""))
-        [error-msg errors] (validate-pages pages)]
-    (when (= :error error-msg)
-      (throw (ex-info (str "The following pages must have absolute paths: "
-                           (pr-str errors))
-                      {:errors errors})))
+  (ensure-absolute-paths pages)
+  (let [target-dir (when target-dir (str/replace target-dir #"/$" ""))]
     (doseq [[uri get-page] pages]
       (let [uri (normalize-uri uri)
             path (str target-dir uri)]
