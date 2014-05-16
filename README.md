@@ -333,6 +333,11 @@ If you just want some code to look at, check these out:
   [Clygments](https://github.com/bfontaine/clygments)) for syntax highlighting,
   and [Optimus](https://github.com/magnars/optimus) for the asset pipeline.
 
+- [bryan.codes](http://bryan.codes/) [(source)](https://github.com/gilbertw1/blog-gen)
+
+  Parses markdown table syntax to create metadata and tags for its blog posts.
+  Clever! Uses many of the same technologies listed above.
+
 Got an open source site written in Stasis? Do let me know, and I'll
 add it here!
 
