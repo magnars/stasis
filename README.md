@@ -18,15 +18,15 @@ A Clojure library of tools for developing static web sites.
 
 Add `[stasis "2.0.0"]` to `:dependencies` in your `project.clj`.
 
-Please note that this project uses
-[Semantic Versioning](http://semver.org/). There will be no breaking
-changes without a major version increase.
+Please note that this project uses [Semantic Versioning](http://semver.org/).
+There will be no breaking changes without a major version increase. There's also
+a [change log](#change-log).
 
 ## Another static site framework? Why?
 
-Well, that's exactly it. I didn't want to use a framework. I don't
-like the restrained feeling I get when using them. I prefer coding
-things over messing around with configuration files.
+Well, that's exactly it. I didn't want to use a framework. I don't like the
+restrained feeling I get when using them. I prefer coding things over messing
+around with configuration files.
 
 I want to
 
