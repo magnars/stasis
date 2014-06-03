@@ -16,7 +16,7 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "2.0.0"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "2.1.0"]` to `:dependencies` in your `project.clj`.
 
 Please note that this project uses [Semantic Versioning](http://semver.org/).
 There will be no breaking changes without a major version increase. There's also
@@ -465,6 +465,10 @@ top. :-)
 
 ## Change log
 
+#### From 2.0 to 2.1
+
+- Add `report-differences`
+
 #### From 1.1 to 2.0
 
 - **Stasis now only accepts paths that end in a file extension or a slash `/`.**
@@ -479,7 +483,7 @@ top. :-)
 
 #### From 1.0 to 1.1
 
-- Add slurp-resources
+- Add `slurp-resources`
 - Ensure page paths are absolute (Cesar BP)
 - Fix an issue with running Stasis on Windows (Oak Nauhygon)
 
