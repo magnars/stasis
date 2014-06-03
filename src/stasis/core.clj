@@ -7,13 +7,17 @@
   (:import [java.io File]
            [java.util.regex Pattern]))
 
-(defn- normalize-uri [#^String uri]
+(defn- normalize-uri [^String uri]
   (let [decoded-uri (url-decode uri)]
     (cond
      (.endsWith decoded-uri ".html") decoded-uri
      (.endsWith decoded-uri "/") (str decoded-uri "index.html")
      (re-find #"/[^./]+$" decoded-uri) (str decoded-uri "/index.html")
      :else decoded-uri)))
+
+(defn- statically-servable-uri? [^String uri]
+  (or (.endsWith uri "/")
+      (not (re-find #"/[^./]+$" uri))))
 
 (defn- normalize-page-uris [pages]
   (zipmap (map normalize-uri (keys pages))
@@ -23,7 +27,7 @@
 
 (def fsep-regex (java.util.regex.Pattern/quote fsep))
 
-(defn- normalize-path [#^String path]
+(defn- normalize-path [^String path]
   (if (= fsep "/")
     path
     (.replaceAll path fsep-regex "/")))
@@ -62,12 +66,14 @@
                     get-pages)]
     (ensure-absolute-paths (get-pages))
     (fn [request]
-      (let [request (update-in request [:uri] normalize-uri)
-            pages (normalize-page-uris (get-pages))]
-        (ensure-absolute-paths pages)
-        (if-let [get-page (pages (:uri request))]
-          (serve-page get-page (merge request options))
-          not-found)))))
+      (if-not (statically-servable-uri? (:uri request))
+        {:status 301, :headers {"Location" (str (:uri request) "/")}}
+        (let [request (update-in request [:uri] normalize-uri)
+              pages (normalize-page-uris (get-pages))]
+          (ensure-absolute-paths pages)
+          (if-let [get-page (pages (:uri request))]
+            (serve-page get-page (merge request options))
+            not-found))))))
 
 (defn- create-folders [path]
   (.mkdirs (.getParentFile (io/file path))))
@@ -98,7 +104,7 @@
       (if (.exists f)
         (throw (Exception. (str (get-path f) " is not a directory.")))))))
 
-(defn- just-the-filename [#^String path]
+(defn- just-the-filename [^String path]
   (last (str/split path #"/")))
 
 (defn- emacs-file-artefact? [^String path]
