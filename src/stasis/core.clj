@@ -50,27 +50,41 @@
    :body "<h1>Page not found</h1>"
    :headers {"Content-Type" "text/html"}})
 
-(defn- ensure-absolute-paths [pages]
+(defn- ensure-absolute-paths [paths]
   "Validates that the paths (the keys) of the pages are absolute paths,
    so that ring can serve them properly."
-  (let [errors (->> pages keys
+  (let [errors (->> paths
                     (remove #(re-find #"^/" %)))]
     (when (seq errors)
       (throw (ex-info (str "The following pages must have absolute paths: "
                            (pr-str errors))
                       {:errors errors})))))
 
+(defn- ensure-statically-servable-paths [paths]
+  "Validates that the paths (the keys) of the pages either end in a file extension or a slash,
+   so that they can be served properly as static files."
+  (let [errors (->> paths
+                    (remove statically-servable-uri?))]
+    (when (seq errors)
+      (throw (ex-info (str "The following page paths must end in a slash: "
+                           (pr-str errors))
+                      {:errors errors})))))
+
+(defn- ensure-valid-paths [paths]
+  (ensure-absolute-paths paths)
+  (ensure-statically-servable-paths paths))
+
 (defn serve-pages [get-pages & [options]]
   (let [get-pages (if (map? get-pages) ;; didn't pass a fn, just a map of pages
                     (fn [] get-pages)
                     get-pages)]
-    (ensure-absolute-paths (get-pages))
+    (ensure-valid-paths (keys (get-pages)))
     (fn [request]
       (if-not (statically-servable-uri? (:uri request))
         {:status 301, :headers {"Location" (str (:uri request) "/")}}
         (let [request (update-in request [:uri] normalize-uri)
               pages (normalize-page-uris (get-pages))]
-          (ensure-absolute-paths pages)
+          (ensure-valid-paths (keys pages))
           (if-let [get-page (pages (:uri request))]
             (serve-page get-page (merge request options))
             not-found))))))
@@ -79,7 +93,7 @@
   (.mkdirs (.getParentFile (io/file path))))
 
 (defn export-pages [pages target-dir & [options]]
-  (ensure-absolute-paths pages)
+  (ensure-valid-paths (keys pages))
   (let [target-dir (when target-dir (str/replace target-dir #"/$" ""))]
     (doseq [[uri get-page] pages]
       (let [uri (normalize-uri uri)

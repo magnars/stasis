@@ -4,6 +4,8 @@
             [clojure.java.io :as io]
             [test-with-files.core :refer [with-files with-tmp-dir tmp-dir public-dir]]))
 
+(defn noop [] nil)
+
 (fact
  "Stasis creates a Ring handler to serve your pages."
 
@@ -46,6 +48,19 @@
    (app {:uri "/page"}) => {:status 301, :headers {"Location" "/page/"}}))
 
 (fact
+ "Paths without .html or an ending slash is prohibited, because such URLs slow
+  your site down with needless redirects."
+
+ (serve-pages {"/ok.html" noop
+               "/ok/" noop
+               "/not-ok" noop}) => (throws Exception "The following page paths must end in a slash: (\"/not-ok\")"))
+
+(fact
+ "It forces pages paths to be absolute paths."
+ (serve-pages {"foo.html" "bar"}) => (throws Exception "The following pages must have absolute paths: (\"foo.html\")")
+ (export-pages {"foo.html" "bar"} nil) => (throws Exception "The following pages must have absolute paths: (\"foo.html\")"))
+
+(fact
  "If you use paths with strange characters, like { and }, it transparently
   decodes incoming URLs"
 
@@ -82,7 +97,7 @@
  "Stasis adds the :uri to the context for exported pages."
 
  (with-tmp-dir
-   (export-pages {"/page" (fn [ctx] (str "I'm serving " (:uri ctx)))}
+   (export-pages {"/page/" (fn [ctx] (str "I'm serving " (:uri ctx)))}
                  tmp-dir)
    (slurp (str tmp-dir "/page/index.html")) => "I'm serving /page/index.html"))
 
@@ -91,7 +106,7 @@
   configuration options, or optimus assets."
 
  (with-tmp-dir
-   (export-pages {"/page" (fn [ctx] (str "I got " (:conf ctx)))}
+   (export-pages {"/page/" (fn [ctx] (str "I got " (:conf ctx)))}
                  tmp-dir {:conf "served"})
    (slurp (str tmp-dir "/page/index.html")) => "I got served"))
 
@@ -168,9 +183,3 @@
       (merge-page-sources {:general-pages {"/" ""}
                            :article-pages {"/index.html" ""}})
       => (throws Exception "URL conflicts between :article-pages and :general-pages: #{\"/index.html\"}"))
-
-(fact "It forces pages paths to be absolute paths."
-      (serve-pages {"foo.html" "bar"})
-      => (throws Exception "The following pages must have absolute paths: (\"foo.html\")")
-      (export-pages {"foo.html" "bar"} nil)
-      => (throws Exception "The following pages must have absolute paths: (\"foo.html\")"))
