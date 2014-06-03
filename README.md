@@ -2,9 +2,21 @@
 
 A Clojure library of tools for developing static web sites.
 
+### Breaking change in 2.0
+
+- **Stasis now only accepts paths that end in a file extension or a slash `/`.**
+
+  Stasis exports paths without a file extension as directories with an
+  `index.html` file. Most web servers will respond to the slash-less request
+  with a redirect to the URL including a slash. This redirect is entirely
+  avoidable by just linking to the right URL in the first place.
+
+  This change should help you avoid these needless redirects, increasing the
+  speed of your site further.
+
 ## Install
 
-Add `[stasis "1.1.1"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "2.0.0"]` to `:dependencies` in your `project.clj`.
 
 Please note that this project uses
 [Semantic Versioning](http://semver.org/). There will be no breaking
@@ -407,6 +419,26 @@ options. You have to make those yourself.
 So, yeah ... I think Stasis would be a great starting point if you
 want to create the 6th static site framework to go in that list at the
 top. :-)
+
+## Change log
+
+#### From 1.1 to 2.0
+
+- **Stasis now only accepts paths that end in a file extension or a slash `/`.**
+
+  Stasis exports paths without a file extension as directories with an
+  `index.html` file. Most web servers will respond to the slash-less request
+  with a redirect to the URL including a slash. This redirect is entirely
+  avoidable by just linking to the right URL in the first place.
+
+  This change should help you avoid these needless redirects, increasing the
+  speed of your site further.
+
+#### From 1.0 to 1.1
+
+- Add slurp-resources
+- Ensure page paths are absolute (Cesar BP)
+- Fix an issue with running Stasis on Windows (Oak Nauhygon)
 
 ## Contributors
 
