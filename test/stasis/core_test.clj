@@ -183,3 +183,17 @@
       (merge-page-sources {:general-pages {"/" ""}
                            :article-pages {"/index.html" ""}})
       => (throws Exception "URL conflicts between :article-pages and :general-pages: #{\"/index.html\"}"))
+
+(fact "It finds differences between maps (used by report-differences)."
+
+      (diff-maps {"/texts/fruit/banana.txt" "Banana"
+                  "/texts/fruit/apple.txt" "Apple"
+                  "/texts/vegetables/cucumber.txt" "Cucumber"}
+                 {"/texts/fruit/banana.txt" "Banana"
+                  "/texts/fruit/apple.txt" "Apple!"
+                  "/texts/vegetables/tomato.txt" "Tomato"})
+
+      => {:removed #{"/texts/vegetables/cucumber.txt"}
+          :added #{"/texts/vegetables/tomato.txt"}
+          :changed #{"/texts/fruit/apple.txt"}
+          :unchanged #{"/texts/fruit/banana.txt"}})

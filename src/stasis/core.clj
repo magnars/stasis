@@ -1,9 +1,11 @@
 (ns stasis.core
-  (:require [clojure.java.io :as io]
+  (:require [clansi.core :as ansi]
+            [clojure.java.io :as io]
             [clojure.set :as set]
             [clojure.string :as str]
+            [ring.util.codec :refer [url-decode]]
             [stasis.class-path :refer [file-paths-on-class-path]]
-            [ring.util.codec :refer [url-decode]])
+            [inflections.core :refer [plural]])
   (:import [java.io File]
            [java.util.regex Pattern]))
 
@@ -165,3 +167,47 @@
 
 (defn merge-page-sources [sources]
   (->> sources guard-against-collisions vals (apply merge)))
+
+(defn- is-changed? [old new path]
+  (not= (get old path)
+        (get new path)))
+
+(defn diff-maps [old new]
+  (let [added (set/difference (set (keys new)) (keys old))
+        removed (set/difference (set (keys old)) (keys new))
+        remaining (set/difference (set (keys old)) added removed)
+        is-changed? (partial is-changed? old new)]
+    {:added added
+     :removed removed
+     :changed (set (filter is-changed? remaining))
+     :unchanged (set (remove is-changed? remaining))}))
+
+(defn- pluralize
+  "Add 's' to the end of a word to pluralize it. If it already ends in 's', add
+  'es'. If the optional count parameter is provided, the word will be pluralized
+  unless the count is 1, as in '1 apple, 2 apples'."
+  [word & [count]]
+  (if (= count 1) word (plural word)))
+
+(defn- print-heading [s entries color]
+  (let [num (count entries)]
+    (println (ansi/style (format s num (pluralize "file" num)) color))))
+
+(defn report-differences [old new]
+  (let [{:keys [added removed changed unchanged]} (diff-maps old new)]
+    (if (and (empty? removed)
+             (empty? changed)
+             (empty? unchanged))
+      (print-heading "- First export! Created %s %s." added :green)
+      (do
+        (when (seq unchanged)
+          (print-heading "- %s unchanged %s." unchanged :cyan))
+        (when (seq changed)
+          (print-heading "- %s changed %s:" changed :yellow)
+          (doseq [path (sort changed)] (println "    -" path)))
+        (when (seq removed)
+          (print-heading "- %s removed %s:" removed :red)
+          (doseq [path (sort removed)] (println "    -" path)))
+        (when (seq added)
+          (print-heading "- %s added %s:" added :green)
+          (doseq [path (sort added)] (println "    -" path)))))))

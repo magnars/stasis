@@ -289,6 +289,49 @@ merge. The keys in the map are only used for error reporting:
 URL conflicts between :article-pages and :general-pages: #{"/about.html"}
 ```
 
+### `report-differences`
+
+This entirely side-effecty function takes an old and a new map of strings,
+compares them and reports the differences to standard out.
+
+Here's a code example from one of my projects:
+
+```clj
+(def export-dir "./dist")
+
+(defn- load-export-dir []
+  (stasis/slurp-directory export-dir #"\.[^.]+$"))
+
+(defn export
+  "Export the entire site as flat files to the export-dir."
+  []
+  (let [old-files (load-export-dir)] ;; 1.
+    (stasis/empty-directory! export-dir)
+    (stasis/export-pages (get-pages) export-dir)
+    (println)
+    (println "Export complete:")
+    (stasis/report-differences old-files (load-export-dir)) ;; 2.
+    (println)))
+```
+
+1. We slurp the old directory into memory before emptying it
+
+2. After we're done exporting, pass in old and new files to print the report.
+
+This prints something along these lines (in glorious ansi color):
+
+```
+Export complete:
+- 260 unchanged files.
+- 2 changed files:
+    - /index.html
+    - /troubleshooting/index.html
+- 1 removed file:
+    - /verified-hash/index.html
+- 1 added file:
+    - /verified-hashes/index.html
+```
+
 ## Q & A
 
 ### Can I avoid the .html endings on my pages?
