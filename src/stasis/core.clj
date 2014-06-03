@@ -173,8 +173,8 @@
         (get new path)))
 
 (defn diff-maps [old new]
-  (let [added (set/difference (set (keys new)) (keys old))
-        removed (set/difference (set (keys old)) (keys new))
+  (let [added (set/difference (set (keys new)) (set (keys old)))
+        removed (set/difference (set (keys old)) (set (keys new)))
         remaining (set/difference (set (keys old)) added removed)
         is-changed? (partial is-changed? old new)]
     {:added added
