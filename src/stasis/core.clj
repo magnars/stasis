@@ -80,34 +80,26 @@
   (ensure-absolute-paths paths)
   (ensure-statically-servable-paths paths))
 
-(defn- populate-known-dependent-pages [uri page known-dependent-pages] ;; known-dependent-pages is a an atom of a map from (dependent) uri to host-page-uri
+(defn- try-serving-dependent-page [request pages known-dependent-pages fallback]
+  (if-let [host-page-uri (@known-dependent-pages (:uri request))] ;; known-dependent-pages is a an atom of a map from (dependent) uri to host-page-uri
+    (if-let [host-pageish (pages host-page-uri)]
+      (let [host-page (realize-page host-pageish request)]
+        (if-let [dependent-page (and (map? host-page)
+                                     (get-in host-page [:dependent-pages (:uri request)]))]
+          (serve-page dependent-page (:uri request))
+          (fallback)))
+      (fallback))
+    (fallback)))
+
+(defn- populate-known-dependent-pages [uri page known-dependent-pages]
   (when (and (map? page) (:dependent-pages page))
     (swap! known-dependent-pages merge (zipmap (keys (:dependent-pages page))
                                                (repeat uri)))))
 
-(declare try-serving-dependent-page)
-
-(def ^:dynamic *all-dependent-pages-already-found* false)
-
-(defn- find-all-dependent-pages-before-serving [request pages known-dependent-pages]
-  (if *all-dependent-pages-already-found*
-    not-found
-    (binding [*all-dependent-pages-already-found* true]
-      (doseq [[uri pageish] pages]
-        (populate-known-dependent-pages uri (realize-page pageish (assoc request :uri uri)) known-dependent-pages))
-      (try-serving-dependent-page request pages known-dependent-pages))))
-
-(defn- try-serving-dependent-page [request pages known-dependent-pages]
-  (let [last-ditch-effort (partial find-all-dependent-pages-before-serving request pages known-dependent-pages)]
-    (if-let [host-page-uri (@known-dependent-pages (:uri request))]
-      (if-let [host-pageish (pages host-page-uri)]
-        (let [host-page (realize-page host-pageish request)]
-          (if-let [dependent-page (and (map? host-page)
-                                       (get-in host-page [:dependent-pages (:uri request)]))]
-            (serve-page dependent-page (:uri request))
-            (last-ditch-effort)))
-        (last-ditch-effort))
-      (last-ditch-effort))))
+(defn- serve-after-finding-all-dependent-pages [request pages known-dependent-pages]
+  (doseq [[uri pageish] pages]
+    (populate-known-dependent-pages uri (realize-page pageish (assoc request :uri uri)) known-dependent-pages))
+  (try-serving-dependent-page request pages known-dependent-pages (fn [] not-found)))
 
 (defn serve-pages [get-pages & [options]]
   (let [get-pages (if (map? get-pages) ;; didn't pass a fn, just a map of pages
@@ -127,7 +119,8 @@
             (let [page (realize-page pageish request)]
               (populate-known-dependent-pages (:uri request) page known-dependent-pages)
               (serve-page page (:uri request)))
-            (try-serving-dependent-page request pages known-dependent-pages)))))))
+            (try-serving-dependent-page request pages known-dependent-pages
+                                        (partial serve-after-finding-all-dependent-pages request pages known-dependent-pages))))))))
 
 (defn- create-folders [path]
   (.mkdirs (.getParentFile (io/file path))))
