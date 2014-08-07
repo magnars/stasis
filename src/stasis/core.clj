@@ -40,12 +40,16 @@
 (defn- assoc-if [m assoc? k v]
   (if assoc? (assoc m k v) m))
 
-(defn- serve-page [get-page request]
+(defn- realize-page [pageish request] ;; a pageish is either a page, or a function that creates a page
+  (if (or (string? pageish) ;; a page is either a string (of html) or a map
+          (map? pageish))
+    pageish
+    (pageish request)))
+
+(defn- serve-page [page uri]
   (-> {:status 200
-       :body (if (string? get-page)
-               get-page ;; didn't pass a fn, just the page contents
-               (get-page request))}
-      (assoc-if (.endsWith (:uri request) ".html") :headers {"Content-Type" "text/html"})))
+       :body (if (map? page) (:contents page) page)}
+      (assoc-if (.endsWith uri ".html") :headers {"Content-Type" "text/html"})))
 
 (def not-found
   {:status 404
@@ -76,35 +80,75 @@
   (ensure-absolute-paths paths)
   (ensure-statically-servable-paths paths))
 
+(defn- populate-known-dependent-pages [uri page known-dependent-pages] ;; known-dependent-pages is a an atom of a map from (dependent) uri to host-page-uri
+  (when (and (map? page) (:dependent-pages page))
+    (swap! known-dependent-pages merge (zipmap (keys (:dependent-pages page))
+                                               (repeat uri)))))
+
+(declare try-serving-dependent-page)
+
+(def ^:dynamic *all-dependent-pages-already-found* false)
+
+(defn- find-all-dependent-pages-before-serving [request pages known-dependent-pages]
+  (if *all-dependent-pages-already-found*
+    not-found
+    (binding [*all-dependent-pages-already-found* true]
+      (doseq [[uri pageish] pages]
+        (populate-known-dependent-pages uri (realize-page pageish (assoc request :uri uri)) known-dependent-pages))
+      (try-serving-dependent-page request pages known-dependent-pages))))
+
+(defn- try-serving-dependent-page [request pages known-dependent-pages]
+  (let [last-ditch-effort (partial find-all-dependent-pages-before-serving request pages known-dependent-pages)]
+    (if-let [host-page-uri (@known-dependent-pages (:uri request))]
+      (if-let [host-pageish (pages host-page-uri)]
+        (let [host-page (realize-page host-pageish request)]
+          (if-let [dependent-page (and (map? host-page)
+                                       (get-in host-page [:dependent-pages (:uri request)]))]
+            (serve-page dependent-page (:uri request))
+            (last-ditch-effort)))
+        (last-ditch-effort))
+      (last-ditch-effort))))
+
 (defn serve-pages [get-pages & [options]]
   (let [get-pages (if (map? get-pages) ;; didn't pass a fn, just a map of pages
                     (fn [] get-pages)
-                    get-pages)]
+                    get-pages)
+        known-dependent-pages (atom {})] ;; map from (dependent) uri to host-page-uri
     (ensure-valid-paths (keys (get-pages)))
     (fn [request]
       (if-not (statically-servable-uri? (:uri request))
         {:status 301, :headers {"Location" (str (:uri request) "/")}}
-        (let [request (update-in request [:uri] normalize-uri)
+        (let [request (-> request
+                          (update-in [:uri] normalize-uri)
+                          (merge options))
               pages (normalize-page-uris (get-pages))]
           (ensure-valid-paths (keys pages))
-          (if-let [get-page (pages (:uri request))]
-            (serve-page get-page (merge request options))
-            not-found))))))
+          (if-let [pageish (pages (:uri request))] ;; a pageish is either a page, or a function that creates a page
+            (let [page (realize-page pageish request)]
+              (populate-known-dependent-pages (:uri request) page known-dependent-pages)
+              (serve-page page (:uri request)))
+            (try-serving-dependent-page request pages known-dependent-pages)))))))
 
 (defn- create-folders [path]
   (.mkdirs (.getParentFile (io/file path))))
 
+(defn export-page [uri pageish target-dir options]
+  (let [uri (normalize-uri uri)
+        path (str target-dir uri)
+        page (realize-page pageish (assoc options :uri uri))]
+    (create-folders path)
+    (if (string? page)
+      (spit path page)
+      (do
+        (spit path (:contents page))
+        (doseq [[uri page] (:dependent-pages page)]
+          (export-page uri page target-dir options))))))
+
 (defn export-pages [pages target-dir & [options]]
   (ensure-valid-paths (keys pages))
   (let [target-dir (when target-dir (str/replace target-dir #"/$" ""))]
-    (doseq [[uri get-page] pages]
-      (let [uri (normalize-uri uri)
-            path (str target-dir uri)]
-        (create-folders path)
-        (->> (if (string? get-page)
-               get-page ;; didn't pass a fn, just the page contents
-               (get-page (assoc options :uri uri)))
-             (spit path))))))
+    (doseq [[uri pageish] pages]
+      (export-page uri pageish target-dir options))))
 
 (defn- delete-file-recursively [f]
   (if (.isDirectory f)
