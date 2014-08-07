@@ -86,6 +86,35 @@
                                        :body "alert('/page-details.js');"}))
 
 (fact
+ "When creating a page, you might realize that other dependent pages are needed as
+  well. Stasis helps you out by allowing a page to be a map of {:contents, :dependent-pages}."
+
+ (let [pages {"/" (fn [_] {:contents "Hello"
+                           :dependent-pages {"/dependent.html" "Hi there"}})
+              "/other.html" {:contents "Yo"
+                             :dependent-pages {"/other-dependent.html" "Wazzup"}}}
+       app (serve-pages pages)]
+
+   (app {:uri "/"}) => {:status 200
+                        :body "Hello"
+                        :headers {"Content-Type" "text/html"}}
+
+   (app {:uri "/dependent.html"}) => {:status 200
+                                      :body "Hi there"
+                                      :headers {"Content-Type" "text/html"}}
+
+   (app {:uri "/other-dependent.html"}) => {:status 200
+                                            :body "Wazzup"
+                                            :headers {"Content-Type" "text/html"}}
+
+   (with-tmp-dir
+     (export-pages pages tmp-dir)
+
+     (slurp (str tmp-dir "/index.html")) => "Hello"
+     (slurp (str tmp-dir "/dependent.html")) => "Hi there"
+     (slurp (str tmp-dir "/other-dependent.html")) => "Wazzup")))
+
+(fact
  "Stasis exports pages to your directory of choice."
 
  (with-tmp-dir
