@@ -332,6 +332,31 @@ Export complete:
     - /verified-hashes/index.html
 ```
 
+### Dependent pages
+
+Instead of returning a string of html for your pages, you may return a map:
+
+```clj
+{:contents "the page contents",
+ :dependent-pages {"/uri" "dependent page contents"}}
+```
+
+These dependent pages are then also served and exported.
+
+#### Why would you need that?
+
+Most often, you don't.
+
+However: When creating a page, you may find that you want to extract pieces of
+the page into yet new pages. Say you want to do some optimizations and extract
+inline JavaScript from pages and serve them as cacheable separate files.
+
+Dependent pages gives you the opportunity to do this without cluttering up your
+page-creation logic. When the page containing JavaScript is loaded, you may
+alter the generated page to use a script tag that links to a separate file, and
+then return a page map where `:dependent-pages` contains the page (of
+JavaScript) that contains the extracted inline source.
+
 ## Q & A
 
 ### Can I avoid the .html endings on my pages?
