@@ -14,7 +14,6 @@
     (cond
      (.endsWith decoded-uri ".html") decoded-uri
      (.endsWith decoded-uri "/") (str decoded-uri "index.html")
-     (re-find #"/[^./]+$" decoded-uri) (str decoded-uri "/index.html")
      :else decoded-uri)))
 
 (defn- statically-servable-uri? [^String uri]
@@ -106,7 +105,6 @@
                     (fn [] get-pages)
                     get-pages)
         known-dependent-pages (atom {})] ;; map from (dependent) uri to host-page-uri
-    (ensure-valid-paths (keys (get-pages)))
     (fn [request]
       (if-not (statically-servable-uri? (:uri request))
         {:status 301, :headers {"Location" (str (:uri request) "/")}}

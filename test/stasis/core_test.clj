@@ -4,7 +4,7 @@
             [clojure.java.io :as io]
             [test-with-files.core :refer [with-files with-tmp-dir tmp-dir public-dir]]))
 
-(defn noop [] nil)
+(defn noop [_] nil)
 
 (fact
  "Stasis creates a Ring handler to serve your pages."
@@ -51,13 +51,14 @@
  "Paths without .html or an ending slash is prohibited, because such URLs slow
   your site down with needless redirects."
 
- (serve-pages {"/ok.html" noop
-               "/ok/" noop
-               "/not-ok" noop}) => (throws Exception "The following page paths must end in a slash: (\"/not-ok\")"))
+ ((serve-pages {"/ok.html" noop
+                "/ok/" noop
+                "/not-ok" noop})
+  {:uri "/"}) => (throws Exception "The following page paths must end in a slash: (\"/not-ok\")"))
 
 (fact
  "It forces pages paths to be absolute paths."
- (serve-pages {"foo.html" "bar"}) => (throws Exception "The following pages must have absolute paths: (\"foo.html\")")
+ ((serve-pages {"foo.html" "bar"}) {:uri "/"}) => (throws Exception "The following pages must have absolute paths: (\"foo.html\")")
  (export-pages {"foo.html" "bar"} nil) => (throws Exception "The following pages must have absolute paths: (\"foo.html\")"))
 
 (fact
