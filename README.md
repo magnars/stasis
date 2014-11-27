@@ -256,8 +256,7 @@ contents and transforms it to a list of Clojure data structures.
 ```
 
 It would serve all .html files in that folder, matching the URL
-structure to files on disk. Not the most useful app ever, maybe,
-unless you combine it with:
+structure to files on disk.
 
 ### `slurp-resources`
 
@@ -343,7 +342,7 @@ Instead of returning a string of html for your pages, you may return a map:
 
 These dependent pages are then also served and exported.
 
-#### Why would you need that?
+#### Why would I need that?
 
 Most often, you don't.
 
@@ -474,15 +473,16 @@ here: [clj-rss](https://github.com/yogthos/clj-rss).
 
 ### Is Stasis stable?
 
-Yes. This project uses [Semantic Versioning](http://semver.org/).
-There will be no breaking changes without a major version increase.
+Yes. This project uses [Semantic Versioning](http://semver.org/). There will be
+no breaking changes without a major version increase. And we've got plenty of
+tests to keep us in line.
 
 ### Again, why not use one of the existing frameworks?
 
 I think the existing frameworks are great if they fit your style.
 Stasis imposes no styles. There are very few decisions made for you -
 no markdown vs asciidoc, no enlive vs hiccup. No configuration
-options. You have to make those yourself.
+options. You have to - and get to - make those yourself.
 
 So, yeah ... I think Stasis would be a great starting point if you
 want to create the 6th static site framework to go in that list at the
