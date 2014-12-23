@@ -4,9 +4,7 @@ FROM dockerfile/java
 RUN apt-get update && apt-get install -y \
   git \
   nodejs \
-  npm \
-  nginx \
-  cron
+  nginx
 
 # Get leiningen
 ENV LEIN_ROOT 1
