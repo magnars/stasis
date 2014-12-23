@@ -1,3 +1,4 @@
+var fs = require("fs");
 var sys = require('sys');
 var exec = require('child_process').exec;
 var http = require('http');
@@ -9,8 +10,8 @@ function runBuild() {
   inProgress = exec("/root/build-site.sh", function (error, stdout, stderr) {
     if (error !== null) { console.log('exec error: ' + error); }
 
-    if (stdout && stdout.length) { console.log(stdout); }
     if (stderr && stderr.length) { console.log(stderr); }
+    if (stdout && stdout.length) { console.log(stdout); }
 
     inProgress = false;
     if (anotherAfter) {
@@ -33,4 +34,9 @@ http.createServer(function (req, res) {
 
 }).listen(8002, '127.0.0.1');
 
-console.log('Site is up. Trigger a build on /site/build');
+if (fs.existsSync('/var/www/site/live')) {
+  console.log('Site is up. Trigger a new build on /site/build');
+} else {
+  console.log('Server is up, but site needs to be built.');
+  console.log('Trigger a build on /site/build');
+}

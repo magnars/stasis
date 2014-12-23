@@ -27,8 +27,11 @@ else
         /stasis/build.sh && built=1
         if [ $built ]; then
             log "Publishing"
-            rm -rf /var/www/site/current
-            ln -s /stasis/site/build /var/www/site/current
+            cp -R /stasis/site/build /var/www/site/next
+            mv /var/www/site/current /var/www/site/old
+            mv /var/www/site/next /var/www/site/current
+            ln -s /var/www/site/current /var/www/site/live
+            rm -rf /var/www/site/old
             log "Done!"
         else
             log "Build failed, aborting."
