@@ -16,9 +16,12 @@
      (.endsWith decoded-uri "/") (str decoded-uri "index.html")
      :else decoded-uri)))
 
-(defn- statically-servable-uri? [^String uri]
-  (or (.endsWith uri "/")
-      (not (re-find #"/[^./]+$" uri))))
+(defn file-without-suffix? [uri]
+  (nil? (re-find #"\.\w+$" uri)))
+
+(defn statically-servable-uri? [^String uri]
+  "All paths are statically servable. / /test /test/ & /test.html."
+  true)
 
 (defn- normalize-page-uris [pages]
   (zipmap (map normalize-uri (keys pages))
@@ -48,7 +51,7 @@
 (defn- serve-page [page uri]
   (-> {:status 200
        :body (if (map? page) (:contents page) page)}
-      (assoc-if (.endsWith uri ".html") :headers {"Content-Type" "text/html"})))
+      (assoc-if (or (file-without-suffix? uri) (.endsWith uri ".html")) :headers {"Content-Type" "text/html"})))
 
 (def not-found
   {:status 404

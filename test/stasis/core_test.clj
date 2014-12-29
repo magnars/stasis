@@ -7,6 +7,11 @@
 (defn noop [_] nil)
 
 (fact
+  "Determine if a path has a suffix."
+  (file-without-suffix? "http://test.com/test") => true
+  (file-without-suffix? "http://test.com/test.html") => false)
+
+(fact
  "Stasis creates a Ring handler to serve your pages."
 
  (let [app (serve-pages {"/page.html" "The page contents"})]
@@ -38,23 +43,23 @@
    (:body (app {:uri "/page.html"})) => "I'm serving /page.html"))
 
 (fact
- "If you use paths without .html, it serves them as directories with
-  an index.html."
+ "If you use directory paths, it serves them as directories with an index.html."
 
  (let [app (serve-pages {"/page/" (fn [ctx] (str "I'm serving " (:uri ctx)))})]
 
    (:body (app {:uri "/page/index.html"})) => "I'm serving /page/index.html"
-   (:body (app {:uri "/page/"})) => "I'm serving /page/index.html"
-   (app {:uri "/page"}) => {:status 301, :headers {"Location" "/page/"}}))
+   (:body (app {:uri "/page/"})) => "I'm serving /page/index.html"))
 
 (fact
- "Paths without .html or an ending slash is prohibited, because such URLs slow
-  your site down with needless redirects."
+ "If you use paths without .html and without a trailing slash it serves
+ the file and assumes the content type is text/html"
 
- ((serve-pages {"/ok.html" noop
-                "/ok/" noop
-                "/not-ok" noop})
-  {:uri "/"}) => (throws Exception "The following page paths must end in a slash: (\"/not-ok\")"))
+ (let [app (serve-pages {"/page" (fn [ctx] (str "I'm serving " (:uri ctx)))})]
+
+   (:body (app {:uri "/page"})) => "I'm serving /page"
+   (app {:uri "/page"}) => {:status 200
+                            :body "I'm serving /page"
+                            :headers {"Content-Type" "text/html"}}))
 
 (fact
  "It forces pages paths to be absolute paths."

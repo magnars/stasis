@@ -1,4 +1,4 @@
-(defproject stasis "2.2.2"
+(defproject stasis "2.2.2-bcg"
   :description "A library of tools for creating static websites."
   :url "http://github.com/magnars/stasis"
   :license {:name "Eclipse Public License"
