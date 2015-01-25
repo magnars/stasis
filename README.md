@@ -1,4 +1,4 @@
-# <img align="right" src="logos/stasis-square.png"> Stasis [![Build Status](https://secure.travis-ci.org/magnars/stasis.png)](http://travis-ci.org/magnars/stasis)
+# <img align="right" src="logos/stasis-square.png" width="115" height="115"> Stasis [![Build Status](https://secure.travis-ci.org/magnars/stasis.png)](http://travis-ci.org/magnars/stasis)
 
 A Clojure library of tools for developing static web sites.
 
