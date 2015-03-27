@@ -20,7 +20,11 @@ if [ -f "in-progress.tmp" ]; then
 else
     touch in-progress.tmp
 
-    git pull | grep -q -v 'Already up-to-date.' && changed=1
+    if [ -f "/stasis/deploy-key" ]; then
+        ssh-agent bash -c "ssh-add /stasis/deploy-key; git pull" | grep -q -v 'Already up-to-date.' && changed=1
+    else
+        git pull | grep -q -v 'Already up-to-date.' && changed=1
+    fi
 
     if [ $changed ]; then
         log "Building"
