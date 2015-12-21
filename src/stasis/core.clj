@@ -48,12 +48,12 @@
 (defn- serve-page [page uri]
   (-> {:status 200
        :body (if (map? page) (:contents page) page)}
-      (assoc-if (.endsWith uri ".html") :headers {"Content-Type" "text/html"})))
+      (assoc-if (.endsWith uri ".html") :headers {"Content-Type" "text/html; charset=utf-8"})))
 
 (def not-found
   {:status 404
    :body "<h1>Page not found</h1>"
-   :headers {"Content-Type" "text/html"}})
+   :headers {"Content-Type" "text/html; charset=utf-8"}})
 
 (defn- ensure-absolute-paths [paths]
   "Validates that the paths (the keys) of the pages are absolute paths,
@@ -167,14 +167,14 @@
 (defn- emacs-file? [^File file]
   (-> file get-path emacs-file-artefact?))
 
-(defn slurp-directory [dir regexp]
+(defn slurp-directory [dir regexp & opts]
   (let [dir (io/as-file dir)
         path-len (count (get-path dir))
         path-from-dir #(subs (get-path %) path-len)]
     (->> (file-seq dir)
          (remove emacs-file?)
          (filter #(re-find regexp (path-from-dir %)))
-         (map (juxt path-from-dir slurp))
+         (map (juxt path-from-dir #(apply slurp % opts)))
          (into {}))))
 
 (defn- chop-up-to [^String prefix ^String s]
