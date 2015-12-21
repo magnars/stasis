@@ -167,14 +167,14 @@
 (defn- emacs-file? [^File file]
   (-> file get-path emacs-file-artefact?))
 
-(defn slurp-directory [dir regexp]
+(defn slurp-directory [dir regexp & opts]
   (let [dir (io/as-file dir)
         path-len (count (get-path dir))
         path-from-dir #(subs (get-path %) path-len)]
     (->> (file-seq dir)
          (remove emacs-file?)
          (filter #(re-find regexp (path-from-dir %)))
-         (map (juxt path-from-dir slurp))
+         (map (juxt path-from-dir #(apply slurp % opts)))
          (into {}))))
 
 (defn- chop-up-to [^String prefix ^String s]
