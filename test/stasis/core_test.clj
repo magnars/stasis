@@ -13,11 +13,11 @@
 
    (app {:uri "/page.html"}) => {:status 200
                                  :body "The page contents"
-                                 :headers {"Content-Type" "text/html"}}
+                                 :headers {"Content-Type" "text/html; charset=utf-8"}}
 
    (app {:uri "/missing.html"}) => {:status 404
                                     :body "<h1>Page not found</h1>"
-                                    :headers {"Content-Type" "text/html"}}))
+                                    :headers {"Content-Type" "text/html; charset=utf-8"}}))
 
 (fact
  "You can pass in a `get-pages` function too, if you need to determine
@@ -28,7 +28,7 @@
 
    (app {:uri "/page.html"}) => {:status 200
                                  :body "The page contents"
-                                 :headers {"Content-Type" "text/html"}}))
+                                 :headers {"Content-Type" "text/html; charset=utf-8"}}))
 
 (fact
  "A page can be a function too, which is passed its context with :uri in."
@@ -98,15 +98,15 @@
 
    (app {:uri "/"}) => {:status 200
                         :body "Hello"
-                        :headers {"Content-Type" "text/html"}}
+                        :headers {"Content-Type" "text/html; charset=utf-8"}}
 
    (app {:uri "/dependent.html"}) => {:status 200
                                       :body "Hi there"
-                                      :headers {"Content-Type" "text/html"}}
+                                      :headers {"Content-Type" "text/html; charset=utf-8"}}
 
    (app {:uri "/other-dependent.html"}) => {:status 200
                                             :body "Wazzup"
-                                            :headers {"Content-Type" "text/html"}}
+                                            :headers {"Content-Type" "text/html; charset=utf-8"}}
 
    (with-tmp-dir
      (export-pages pages tmp-dir)
