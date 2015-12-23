@@ -258,6 +258,13 @@ contents and transforms it to a list of Clojure data structures.
 It would serve all .html files in that folder, matching the URL
 structure to files on disk.
 
+Like [`slurp`](https://clojuredocs.org/clojure.core/slurp),
+`slurp-directory` can also receive optional arguments such as `:encoding`:
+
+```clj
+(slurp-directory "resources/articles/" #"\.md$" :encoding "UTF-8")
+```
+
 ### `slurp-resources`
 
 Just like `slurp-directory`, except it reads off the class path
