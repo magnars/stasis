@@ -181,13 +181,13 @@
   (subs s (+ (.indexOf s prefix)
              (count prefix))))
 
-(defn slurp-resources [dir regexp]
+(defn slurp-resources [dir regexp & opts]
   (->> (file-paths-on-class-path)
        (filter (fn [^String s] (.contains s (str dir "/"))))
        (filter #(re-find regexp %))
        (remove #(emacs-file-artefact? (chop-up-to dir %)))
        (map (juxt #(chop-up-to dir %)
-                  #(slurp (io/resource %))))
+                  #(apply slurp (io/resource %) opts)))
        (into {})))
 
 (defn- guard-against-collisions [pages]
