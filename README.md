@@ -16,7 +16,7 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "2.2.2"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "2.3.0"]` to `:dependencies` in your `project.clj`.
 
 Please note that this project uses [Semantic Versioning](http://semver.org/).
 There will be no breaking changes without a major version increase. There's also
@@ -497,6 +497,11 @@ top. :-)
 
 ## Change log
 
+#### From 2.2 to 2.3
+
+- `slurp-directory` and `slurp-resources` now take options like
+  [`slurp`](https://clojuredocs.org/clojure.core/slurp).
+
 #### From 2.1 to 2.2
 
 - Add support for [dependent pages](#dependent-pages)
@@ -525,9 +530,10 @@ top. :-)
 
 ## Contributors
 
-- [Oak Nauhygon](nauhygon) fixed an issue with running Stasis on Windows.
-- [Cesar BP](cesarbp) made sure that page URLs are absolute.
-- [Christian Johansen](cjohansen) handled encoded URIs coming in to the local server.
+- [Oak Nauhygon](https://github.com/nauhygon) fixed an issue with running Stasis on Windows.
+- [Cesar BP](https://github.com/cesarbp) made sure that page URLs are absolute.
+- [Christian Johansen](https://github.com/cjohansen) handled encoded URIs coming in to the local server.
+- [Mark Hudnall](https://github.com/landakram) improved `slurp-directory` and `slurp-resources`
 
 Thanks!
 
