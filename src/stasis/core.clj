@@ -167,7 +167,12 @@
 (defn- emacs-file? [^File file]
   (-> file get-path emacs-file-artefact?))
 
-(defn slurp-directory [dir regexp & opts]
+(defn slurp-directory
+  "Returns a map of paths to file contents in the `dir`. `dir` should be
+  accessible via `clojure.java.io/as-file`. `regexp` will be used to filter the
+  files. `opts` are passed to `slurp` to enable specification of encoding and
+  buffer-size etc."
+  [dir regexp & opts]
   (let [dir (io/as-file dir)
         path-len (count (get-path dir))
         path-from-dir #(subs (get-path %) path-len)]
@@ -181,7 +186,11 @@
   (subs s (+ (.indexOf s prefix)
              (count prefix))))
 
-(defn slurp-resources [dir regexp & opts]
+(defn slurp-resources
+  "Returns a map of paths to file contents in the `dir` found on the resource
+  path. `regexp` will be used to filter the files. `opts` are passed to `slurp`
+  to enable specification of encoding and buffer-size etc."
+  [dir regexp & opts]
   (->> (file-paths-on-class-path)
        (filter (fn [^String s] (.contains s (str dir "/"))))
        (filter #(re-find regexp %))
@@ -200,7 +209,20 @@
           (throw (Exception. (str "URL conflicts between " k1 " and " k2 ": " collisions)))))))
   pages)
 
-(defn merge-page-sources [sources]
+(defn merge-page-sources
+  "Merges collections of pages ensuring every path only occurs once across all
+  collections.
+
+  Takes a map of collection name to page collection, and returns a map of path
+  to content. The collection names are only used for error reporting.
+
+  For example,
+
+      (merge-page-sources
+       {:person-pages (create-person-pages)
+        :article-pages (create-article-pages)
+        :general-pages (create-general-pages)})"
+  [sources]
   (->> sources guard-against-collisions vals (apply merge)))
 
 (defn- is-changed? [old new path]
