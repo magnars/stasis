@@ -404,15 +404,6 @@ If you just want some code to look at, check these out:
   [Clygments](https://github.com/bfontaine/clygments)) for code
   highlighting.
 
-- [atlantis.net/blog](http://atlanis.net/blog/) [(source)](https://github.com/emallson/atlanis.net-blog)
-
-  This is pretty cool: The blog posts are written in
-  [org-mode](http://orgmode.org/), converted to HTML with Emacs in
-  batch mode, and wrapped in a layout with
-  [Enlive](https://github.com/cgrand/enlive). Also uses
-  [Optimus](https://github.com/magnars/optimus) for frontend
-  optimization.
-
 - [augustl.com](http://augustl.com) [(source)](https://github.com/augustl/augustl.com)
 
   Uses a home brewed HTML based templating system, Pygments (via
