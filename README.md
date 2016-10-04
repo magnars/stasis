@@ -47,6 +47,7 @@ a blog, you should take a look at these:
 - [Static](http://nakkaya.com/static.html) is a simple static site generator written in Clojure.
 - [Ecstatic](http://samrat.me/ecstatic/) creates static web pages and blog posts from Hiccup templates and Markdown.
 - [incise](https://github.com/RyanMcG/incise) is an extensible static site generator written in Clojure.
+- [Cryogen](http://cryogenweb.org/) is a static sites generator written in Clojure
 
 They generally come with a folder where you put your blog posts in
 some templating language, and a set of configuration options about how
