@@ -416,6 +416,12 @@ If you just want some code to look at, check these out:
   Parses markdown table syntax to create metadata and tags for its blog posts.
   Clever! Uses many of the same technologies listed above.
 
+- [lepo.io](https://lepo.io/) [(source)](https://github.com/Lepovirta/lepo)
+
+  Uses [Selmer](https://github.com/yogthos/Selmer) and
+  [Hiccup](https://github.com/weavejester/hiccup) for building the pages, and
+  [Optimus](https://github.com/magnars/optimus) for building assets.
+
 Got an open source site written in Stasis? Do let me know, and I'll
 add it here!
 
