@@ -421,6 +421,11 @@ If you just want some code to look at, check these out:
   Uses [Selmer](https://github.com/yogthos/Selmer) and
   [Hiccup](https://github.com/weavejester/hiccup) for building the pages, and
   [Optimus](https://github.com/magnars/optimus) for building assets.
+  
+- [sneakycode.net](http://sneakycode.net/) [(source)](https://github.com/sneakypeet/sneakycode.net)
+
+  Parses Markdown as well as hiccup defined in edn files. 
+  Edn pages and posts can define rendering functions that are aware of the entire site for maximum flexability.
 
 Got an open source site written in Stasis? Do let me know, and I'll
 add it here!
