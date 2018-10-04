@@ -425,7 +425,7 @@ If you just want some code to look at, check these out:
 - [sneakycode.net](http://sneakycode.net/) [(source)](https://github.com/sneakypeet/sneakycode.net)
 
   Parses Markdown as well as hiccup defined in edn files. 
-  Edn pages and posts can define rendering functions that are aware of the entire site for maximum flexability.
+  Edn pages and posts can define rendering functions that are aware of the entire site for maximum flexibility.
 
 Got an open source site written in Stasis? Do let me know, and I'll
 add it here!
