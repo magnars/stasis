@@ -1,6 +1,4 @@
 language: clojure
 script: lein midje
 jdk:
-  - openjdk6
   - openjdk7
-  - oraclejdk7
