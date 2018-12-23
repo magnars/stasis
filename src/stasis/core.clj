@@ -4,8 +4,7 @@
             [clojure.set :as set]
             [clojure.string :as str]
             [ring.util.codec :refer [url-decode]]
-            [stasis.class-path :refer [file-paths-on-class-path]]
-            [inflections.core :refer [plural]])
+            [stasis.class-path :refer [file-paths-on-class-path]])
   (:import [java.io File]
            [java.util.regex Pattern]))
 
@@ -240,15 +239,12 @@
      :unchanged (set (remove is-changed? remaining))}))
 
 (defn- pluralize
-  "Add 's' to the end of a word to pluralize it. If it already ends in 's', add
-  'es'. If the optional count parameter is provided, the word will be pluralized
-  unless the count is 1, as in '1 apple, 2 apples'."
-  [word & [count]]
-  (if (= count 1) word (plural word)))
+  [count singular plural]
+  (if (= count 1) singular plural))
 
 (defn- print-heading [s entries color]
   (let [num (count entries)]
-    (println (ansi/style (format s num (pluralize "file" num)) color))))
+    (println (ansi/style (format s num (pluralize num "file" "files")) color))))
 
 (defn report-differences [old new]
   (let [{:keys [added removed changed unchanged]} (diff-maps old new)]
