@@ -199,8 +199,8 @@
        (into {})))
 
 (defn- guard-against-collisions [pages]
-  (doseq [k1 (keys pages)
-          k2 (keys pages)]
+  (doseq [k1 (sort (keys pages))
+          k2 (sort (keys pages))]
     (when-not (= k1 k2)
       (let [collisions (set/intersection (set (map normalize-uri (keys (k1 pages))))
                                          (set (map normalize-uri (keys (k2 pages)))))]
