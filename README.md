@@ -16,7 +16,7 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "2.3.0"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "2.4.0"]` to `:dependencies` in your `project.clj`.
 
 Please note that this project uses [Semantic Versioning](http://semver.org/).
 There will be no breaking changes without a major version increase. There's also
@@ -499,6 +499,10 @@ want to create the 6th static site framework to go in that list at the
 top. :-)
 
 ## Change log
+
+#### From 2.3 to 2.4
+
+- Dependencies bumped ahead four years
 
 #### From 2.2 to 2.3
 
