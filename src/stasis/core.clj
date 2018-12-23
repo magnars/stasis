@@ -238,13 +238,9 @@
      :changed (set (filter is-changed? remaining))
      :unchanged (set (remove is-changed? remaining))}))
 
-(defn- pluralize
-  [count singular plural]
-  (if (= count 1) singular plural))
-
 (defn- print-heading [s entries color]
   (let [num (count entries)]
-    (println (ansi/style (format s num (pluralize num "file" "files")) color))))
+    (println (ansi/style (format s num (if (= 1 num) "file" "files")) color))))
 
 (defn report-differences [old new]
   (let [{:keys [added removed changed unchanged]} (diff-maps old new)]
