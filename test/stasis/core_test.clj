@@ -2,6 +2,7 @@
   (:require [stasis.core :refer :all]
             [midje.sweet :refer :all]
             [clojure.java.io :as io]
+            digest
             [test-with-files.core :refer [with-files with-tmp-dir tmp-dir public-dir]]))
 
 (defn noop [_] nil)
@@ -81,10 +82,28 @@
 (fact
  "You can serve other types of assets too."
 
- (let [app (serve-pages {"/page-details.js" (fn [ctx] (str "alert('" (:uri ctx) "');"))})]
+ (let [pages {"/page-details.js"
+              (fn [ctx] (str "alert('" (:uri ctx) "');"))
+
+              ;;See <https://en.wikipedia.org/wiki/Standard_test_image>
+              "/jellybeans.png"
+              (fn [_] (io/file "dev-resources" "4.1.07.png"))}
+       app (serve-pages pages)]
 
    (app {:uri "/page-details.js"}) => {:status 200
-                                       :body "alert('/page-details.js');"}))
+                                       :body "alert('/page-details.js');"}
+
+   (-> (app {:uri "/jellybeans.png"}) :body .getName) => "4.1.07.png"
+
+   (with-tmp-dir
+     (export-pages pages tmp-dir)
+
+     ;; Calculated using:
+     ;; $ md5sum dev-resources/4.1.07.png
+     ;; d84246a8ba02c2e3ee87b07813596d68  dev-resources/4.1.07.png
+     (->> "jellybeans.png" (io/file tmp-dir) digest/md5)
+     =>
+     "d84246a8ba02c2e3ee87b07813596d68")))
 
 (fact
  "When creating a page, you might realize that other dependent pages are needed as

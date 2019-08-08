@@ -5,8 +5,7 @@
             [clojure.string :as str]
             [ring.util.codec :refer [url-decode]]
             [stasis.class-path :refer [file-paths-on-class-path]])
-  (:import [java.io File]
-           [java.util.regex Pattern]))
+  (:import [java.io File FileOutputStream]))
 
 (defn- normalize-uri [^String uri]
   (let [decoded-uri (url-decode uri)]
@@ -127,12 +126,18 @@
         path (str target-dir uri)
         page (realize-page pageish (assoc options :uri uri))]
     (create-folders path)
-    (if (string? page)
+    (cond
+      (string? page)
       (spit path page)
+
+      (map? page)
       (do
-        (spit path (:contents page))
+        (export-page uri (:contents page) target-dir options)
         (doseq [[uri page] (:dependent-pages page)]
-          (export-page uri page target-dir options))))))
+          (export-page uri page target-dir options)))
+
+      :else
+      (with-open [fout (FileOutputStream. path)] (io/copy page fout)))))
 
 (defn export-pages [pages target-dir & [options]]
   (ensure-valid-paths (keys pages))
