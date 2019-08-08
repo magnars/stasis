@@ -16,7 +16,7 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "2.4.0"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "2.5.0"]` to `:dependencies` in your `project.clj`.
 
 Please note that this project uses [Semantic Versioning](http://semver.org/).
 There will be no breaking changes without a major version increase. There's also
@@ -500,6 +500,10 @@ top. :-)
 
 ## Change log
 
+#### From 2.4 to 2.5
+
+- Binary files can now be served by Stasis. (Stephen Starkey)
+
 #### From 2.3 to 2.4
 
 - Dependencies bumped ahead four years
@@ -541,6 +545,7 @@ top. :-)
 - [Cesar BP](https://github.com/cesarbp) made sure that page URLs are absolute.
 - [Christian Johansen](https://github.com/cjohansen) handled encoded URIs coming in to the local server.
 - [Mark Hudnall](https://github.com/landakram) improved `slurp-directory` and `slurp-resources`
+- [Stephen Starkey](https://github.com/coreagile) added support for binary files.
 
 Thanks!
 
