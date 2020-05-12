@@ -34,7 +34,7 @@ I want to
 - set up my own configuration
 - choose my own templating library
 
-**Statis is a collection of functions that are useful when creating
+**Stasis is a collection of functions that are useful when creating
 static web sites.**
 
 No more. There are no batteries included.
