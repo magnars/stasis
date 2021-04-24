@@ -24,7 +24,8 @@
        (map (fn [#^ZipEntry e] (.getName e)))))
 
 (defn get-resource-paths [path]
-  (let [path-plus-slash-length (inc (count path))
+  (let [path (.getCanonicalPath (File. path))
+        path-plus-slash-length (inc (count path))
         chop-path #(subs % path-plus-slash-length)
         file (File. path)]
     (->> (cond
