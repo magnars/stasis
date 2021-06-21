@@ -42,20 +42,13 @@
  "If you use paths without .html, it serves them as directories with
   an index.html."
 
- (let [app (serve-pages {"/page/" (fn [ctx] (str "I'm serving " (:uri ctx)))})]
+ (let [app (serve-pages {"/page/" (fn [ctx] (str "I'm serving " (:uri ctx)))
+                         "/page" (fn [ctx] (str "I'm serving " (:uri ctx)))})]
 
    (:body (app {:uri "/page/index.html"})) => "I'm serving /page/index.html"
    (:body (app {:uri "/page/"})) => "I'm serving /page/index.html"
-   (app {:uri "/page"}) => {:status 301, :headers {"Location" "/page/"}}))
-
-(fact
- "Paths without .html or an ending slash is prohibited, because such URLs slow
-  your site down with needless redirects."
-
- ((serve-pages {"/ok.html" noop
-                "/ok/" noop
-                "/not-ok" noop})
-  {:uri "/"}) => (throws Exception "The following page paths must end in a slash: (\"/not-ok\")"))
+   (:body (app {:uri "/page"})) => "I'm serving /page"
+   (app {:uri "/page2"})) => {:status 301, :headers {"Location" "/page2/"}})
 
 (fact
  "It forces pages paths to be absolute paths."

@@ -63,19 +63,8 @@
                            (pr-str errors))
                       {:errors errors})))))
 
-(defn- ensure-statically-servable-paths [paths]
-  "Validates that the paths (the keys) of the pages either end in a file extension or a slash,
-   so that they can be served properly as static files."
-  (let [errors (->> paths
-                    (remove statically-servable-uri?))]
-    (when (seq errors)
-      (throw (ex-info (str "The following page paths must end in a slash: "
-                           (pr-str errors))
-                      {:errors errors})))))
-
 (defn- ensure-valid-paths [paths]
-  (ensure-absolute-paths paths)
-  (ensure-statically-servable-paths paths))
+  (ensure-absolute-paths paths))
 
 (defn- try-serving-dependent-page [request pages known-dependent-pages fallback]
   (if-let [host-page-uri (@known-dependent-pages (:uri request))] ;; known-dependent-pages is a an atom of a map from (dependent) uri to host-page-uri
@@ -104,19 +93,22 @@
                     get-pages)
         known-dependent-pages (atom {})] ;; map from (dependent) uri to host-page-uri
     (fn [request]
-      (if-not (statically-servable-uri? (:uri request))
-        {:status 301, :headers {"Location" (str (:uri request) "/")}}
-        (let [request (-> request
-                          (update-in [:uri] normalize-uri)
-                          (merge options))
-              pages (normalize-page-uris (get-pages))]
-          (ensure-valid-paths (keys pages))
-          (if-let [pageish (pages (:uri request))] ;; a pageish is either a page, or a function that creates a page
-            (let [page (realize-page pageish request)]
-              (populate-known-dependent-pages (:uri request) page known-dependent-pages)
-              (serve-page page (:uri request)))
-            (try-serving-dependent-page request pages known-dependent-pages
-                                        (partial serve-after-finding-all-dependent-pages request pages known-dependent-pages))))))))
+      (let [request (-> request
+                        (update-in [:uri] normalize-uri)
+                        (merge options))
+            pages   (normalize-page-uris (get-pages))
+            pageish (pages (:uri request))] ;; a pageish is either a page, or a function that creates a page
+        (if (and (nil? pageish)
+                 (not (statically-servable-uri? (:uri request))))
+          {:status 301, :headers {"Location" (str (:uri request) "/")}}
+          (do
+            (ensure-valid-paths (keys pages))
+            (if (some? pageish)
+              (let [page (realize-page pageish request)]
+                (populate-known-dependent-pages (:uri request) page known-dependent-pages)
+                (serve-page page (:uri request)))
+              (try-serving-dependent-page request pages known-dependent-pages
+                                          (partial serve-after-finding-all-dependent-pages request pages known-dependent-pages)))))))))
 
 (defn- create-folders [path]
   (.mkdirs (.getParentFile (io/file path))))
