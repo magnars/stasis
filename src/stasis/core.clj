@@ -103,20 +103,26 @@
                     (fn [] get-pages)
                     get-pages)
         known-dependent-pages (atom {})] ;; map from (dependent) uri to host-page-uri
-    (fn [request]
-      (if-not (statically-servable-uri? (:uri request))
-        {:status 301, :headers {"Location" (str (:uri request) "/")}}
-        (let [request (-> request
-                          (update-in [:uri] normalize-uri)
-                          (merge options))
-              pages (normalize-page-uris (get-pages))]
-          (ensure-valid-paths (keys pages))
-          (if-let [pageish (pages (:uri request))] ;; a pageish is either a page, or a function that creates a page
-            (let [page (realize-page pageish request)]
-              (populate-known-dependent-pages (:uri request) page known-dependent-pages)
-              (serve-page page (:uri request)))
-            (try-serving-dependent-page request pages known-dependent-pages
-                                        (partial serve-after-finding-all-dependent-pages request pages known-dependent-pages))))))))
+    (fn stasis-handler
+      ([request]
+       (if-not (statically-servable-uri? (:uri request))
+         {:status 301, :headers {"Location" (str (:uri request) "/")}}
+         (let [request (-> request
+                           (update-in [:uri] normalize-uri)
+                           (merge options))
+               pages (normalize-page-uris (get-pages))]
+           (ensure-valid-paths (keys pages))
+           (if-let [pageish (pages (:uri request))] ;; a pageish is either a page, or a function that creates a page
+             (let [page (realize-page pageish request)]
+               (populate-known-dependent-pages (:uri request) page known-dependent-pages)
+               (serve-page page (:uri request)))
+             (try-serving-dependent-page request pages known-dependent-pages
+                                         (partial serve-after-finding-all-dependent-pages request pages known-dependent-pages))))))
+      ([request respond raise]
+       (try
+         (respond (stasis-handler request))
+         (catch Throwable e
+           (raise e)))))))
 
 (defn- create-folders [path]
   (.mkdirs (.getParentFile (io/file path))))
