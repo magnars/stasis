@@ -453,27 +453,36 @@ No worries, it's just a bit of XML generation. Here's a working
 snippet from [whattheemacsd.com](http://whattheemacsd.com/) to create
 an Atom feed:
 
+> [clojure/data.xml](https://github.com/clojure/data.xml) does not allow
+> default namespaces. This means that all tags must have namespace information
+> attached. This is accomplished by adding percent-encoded Clojure namespaces
+> to the tag keywords. The simplest way to accomplish this without static
+> analysis warnings is to explicitly define the namespaces  using `:as-alias`
+> in the `ns` declaration (requires Clojure 1.11.0 or later).
+
 ```clj
 (ns what-the-emacsd.rss
-  (:require [clojure.data.xml :as xml]))
+  (:require
+    [clojure.data.xml :as xml]
+    [xmlns.http%3a%2f%2fwww.w3.org%2f2005%2fAtom :as-alias atom]))
 
 (defn- entry [post]
-  [:entry
-   [:title (:name post)]
-   [:updated (:date post)]
-   [:author [:name "Magnar Sveen"]]
-   [:link {:href (str "http://whattheemacsd.com" (:path post))}]
-   [:id (str "urn:whattheemacsd-com:feed:post:" (:name post))]
-   [:content {:type "html"} (:content post)]])
+  [::atom/entry
+   [::atom/title (:name post)]
+   [::atom/updated (:date post)]
+   [::atom/author [:name "Magnar Sveen"]]
+   [::atom/link {:href (str "http://whattheemacsd.com" (:path post))}]
+   [::atom/id (str "urn:whattheemacsd-com:feed:post:" (:name post))]
+   [::atom/content {:type "html"} (:content post)]])
 
 (defn atom-xml [posts]
   (xml/emit-str
    (xml/sexp-as-element
-    [:feed {:xmlns "http://www.w3.org/2005/Atom"}
-     [:id "urn:whattheemacsd-com:feed"]
-     [:updated (-> posts first :date)]
-     [:title {:type "text"} "What the .emacs.d!?"]
-     [:link {:rel "self" :href "http://whattheemacsd.com/atom.xml"}]
+    [::atom/feed
+     [::atom/id "urn:whattheemacsd-com:feed"]
+     [::atom/updated (-> posts first :date)]
+     [::atom/title {:type "text"} "What the .emacs.d!?"]
+     [::atom/link {:rel "self" :href "http://whattheemacsd.com/atom.xml"}]
      (map entry posts)])))
 ```
 
