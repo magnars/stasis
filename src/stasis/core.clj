@@ -38,10 +38,9 @@
   (if assoc? (assoc m k v) m))
 
 (defn- realize-page [pageish request] ;; a pageish is either a page, or a function that creates a page
-  (if (or (string? pageish) ;; a page is either a string (of html) or a map
-          (map? pageish))
-    pageish
-    (pageish request)))
+  (if (fn? pageish)
+    (pageish request)
+    pageish))
 
 (defn- serve-page [page uri]
   (-> {:status 200
@@ -109,12 +108,19 @@
         (let [request (-> request
                           (update-in [:uri] normalize-uri)
                           (merge options))
+              normalized-uri (:uri request)
               pages (normalize-page-uris (get-pages))]
           (ensure-valid-paths (keys pages))
-          (if-let [pageish (pages (:uri request))] ;; a pageish is either a page, or a function that creates a page
-            (let [page (realize-page pageish request)]
-              (populate-known-dependent-pages (:uri request) page known-dependent-pages)
-              (serve-page page (:uri request)))
+          (if (contains? pages normalized-uri)
+            (let [pageish (pages normalized-uri) ;; a pageish is either a page, or a function that creates a page
+                  page (realize-page pageish request)]
+              (if (nil? page)
+                (if (:stasis/ignore-nil-pages? options)
+                  not-found
+                  (throw (ex-info "Page value is unexpectedly nil" {:uri normalized-uri})))
+                (do
+                  (populate-known-dependent-pages normalized-uri page known-dependent-pages)
+                  (serve-page page normalized-uri))))
             (try-serving-dependent-page request pages known-dependent-pages
                                         (partial serve-after-finding-all-dependent-pages request pages known-dependent-pages))))))))
 
@@ -135,6 +141,11 @@
         (export-page uri (:contents page) target-dir options)
         (doseq [[uri page] (:dependent-pages page)]
           (export-page uri page target-dir options)))
+
+      (nil? page)
+      ;; If the ignore-nil-pages? option is set, do nothing and return nil
+      (when-not (:stasis/ignore-nil-pages? options)
+        (throw (ex-info "Page value is unexpectedly nil" {:uri uri})))
 
       :else
       (with-open [fout (FileOutputStream. path)] (io/copy page fout)))))

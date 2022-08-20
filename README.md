@@ -157,6 +157,27 @@ You can also pass in configuration options that are included on the
 
 These are then available when rendering your page.
 
+By including `:stasis/ignore-nil-pages? true` in the config map, Stasis will
+ignore any page values that are `nil` or return `nil`: `serve-pages` will
+return a `404 Not Found` HTTP response and `export-pages` will skip that page.
+This can be useful when deciding if a page should exist is expensive. For
+example, if you're using a `draft?` value to toggle page rendering in your
+Markdown frontmatter, you can avoid having to parse every Markdown page in the
+site for every request by using this option:
+
+```clj
+(def pages
+  {"/index.html" "<a href=\"/foobar.html\">This page may or may not exist!</a>")
+   "/foobar.html" (fn [_] (let [[frontmatter body] (parse-md "foobar.md")]
+                            (when-not (:draft? frontmatter) body)))})
+
+(defn my-config {:stasis/ignore-nil-pages? true})
+
+(def app (stasis/serve-pages pages my-config))
+
+(stasis/export-pages pages target-dir my-config)
+```
+
 Finally, some Ring middlewares put values on the request to be used in
 rendering. This supports that. Read on:
 
