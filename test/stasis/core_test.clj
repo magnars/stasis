@@ -39,6 +39,30 @@
    (:body (app {:uri "/page.html"})) => "I'm serving /page.html"))
 
 (fact
+ "When the :stasis/ignore-nil-pages? value in the options map is false, requests
+ for pages with nil values should throw an exception"
+ (let [app1 (serve-pages {"/page.html" nil})
+       app2 (serve-pages {"/page.html" noop})]
+
+   (app1 {:uri "/page.html"}) => (throws Exception "Page value is unexpectedly nil")
+
+   (app2 {:uri "/page.html"}) => (throws Exception "Page value is unexpectedly nil")))
+
+(fact
+ "When the :stasis/ignore-nil-pages? value in the options map is true, requests
+ for pages with nil values will be ignored and the response status will be 404"
+ (let [app1 (serve-pages {"/page.html" nil} {:stasis/ignore-nil-pages? true})
+       app2 (serve-pages {"/page.html" noop} {:stasis/ignore-nil-pages? true})]
+
+   (app1 {:uri "/page.html"}) => {:status 404
+                                  :body "<h1>Page not found</h1>"
+                                  :headers {"Content-Type" "text/html"}}
+
+   (app2 {:uri "/page.html"}) => {:status 404
+                                  :body "<h1>Page not found</h1>"
+                                  :headers {"Content-Type" "text/html"}}))
+
+(fact
  "If you use paths without .html, it serves them as directories with
   an index.html."
 
@@ -149,6 +173,26 @@
    (export-pages {"/page/" (fn [ctx] (str "I'm serving " (:uri ctx)))}
                  tmp-dir)
    (slurp (str tmp-dir "/page/index.html")) => "I'm serving /page/index.html"))
+
+(fact
+ "Stasis will throw an exception when exporting a page with a nil value"
+
+ (with-tmp-dir
+   (export-pages {"/page/" nil} tmp-dir) => (throws Exception "Page value is unexpectedly nil"))
+
+ (with-tmp-dir
+   (export-pages {"/page/" noop} tmp-dir) => (throws Exception "Page value is unexpectedly nil")))
+
+(fact
+ "Stasis will not export a page with a nil value when :stasis/ignore-nil-pages? is true in the options map"
+
+ (with-tmp-dir
+   (export-pages {"/page/" nil} tmp-dir {:stasis/ignore-nil-pages? true}) => nil
+   (.exists (io/file tmp-dir "page/index.html")) => false)
+
+ (with-tmp-dir
+   (export-pages {"/page/" noop} tmp-dir {:stasis/ignore-nil-pages? true}) => nil
+   (.exists (io/file tmp-dir "page/index.html")) => false))
 
 (fact
  "You can add more information to the context if you want. Like
