@@ -18,8 +18,8 @@ A Clojure library of tools for developing static web sites.
 
 Add `[stasis "2023.06.03"]` to `:dependencies` in your `project.clj`.
 
-Stasis is a stable library - it will never change it's public API in a breaking
-way, and will never (intentionally) introduce other breaking changes.
+Stasis is a stable library - it will never (again) change it's public API in a
+breaking way, and will never (intentionally) introduce other breaking changes.
 
 Check out the [change log](#change-log).
 
@@ -511,12 +511,6 @@ an Atom feed:
 If this seems like too much, well, maybe you're using the wrong static
 site library. But anyway, there's even a library to create RSS for you
 here: [clj-rss](https://github.com/yogthos/clj-rss).
-
-### Is Stasis stable?
-
-Yes. This project uses [Semantic Versioning](http://semver.org/). There will be
-no breaking changes without a major version increase. And we've got plenty of
-tests to keep us in line.
 
 ### Again, why not use one of the existing frameworks?
 
