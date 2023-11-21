@@ -7,14 +7,14 @@
             [stasis.class-path :refer [file-paths-on-class-path]])
   (:import [java.io File FileOutputStream]))
 
-(defn- normalize-uri [^String uri]
+(defn normalize-uri [^String uri]
   (let [decoded-uri (url-decode uri)]
     (cond
      (.endsWith decoded-uri ".html") decoded-uri
      (.endsWith decoded-uri "/") (str decoded-uri "index.html")
      :else decoded-uri)))
 
-(defn- statically-servable-uri? [^String uri]
+(defn statically-servable-uri? [^String uri]
   (or (.endsWith uri "/")
       (not (re-find #"/[^./]+$" uri))))
 
