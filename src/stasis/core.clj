@@ -159,7 +159,7 @@
       (export-page uri pageish target-dir options))))
 
 (defn- delete-file-recursively [f]
-  (if (.isDirectory f)
+  (when (.isDirectory f)
     (doseq [child (.listFiles f)]
       (delete-file-recursively child)))
   (io/delete-file f))
@@ -169,7 +169,7 @@
     (if (.isDirectory f)
       (doseq [child (.listFiles f)]
         (delete-file-recursively child))
-      (if (.exists f)
+      (when (.exists f)
         (throw (Exception. (str (get-path f) " is not a directory.")))))))
 
 (defn- just-the-filename [^String path]
