@@ -16,7 +16,7 @@ A Clojure library of tools for developing static web sites.
 
 ## Install
 
-Add `[stasis "2023.06.03"]` to `:dependencies` in your `project.clj`.
+Add `[stasis "2023.11.21"]` to `:dependencies` in your `project.clj`.
 
 Stasis is a stable library - it will never (again) change it's public API in a
 breaking way, and will never (intentionally) introduce other breaking changes.
@@ -525,11 +525,12 @@ top. :-)
 
 ## Change log
 
-#### From 2.5 to 2023.06.03
+#### From 2.5 to 2023.11.21
 
 - Update `ring/ring-codec` to work with babashka (John Swanson)
 - Add :stasis/ignore-nil-pages? option to options map (Stel Abrego)
 - Work around incompatability between lein and clj for resources on class path
+- Remove private meta from useful functions (Christian Johansen)
 
 #### From 2.4 to 2.5
 
