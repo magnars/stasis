@@ -52,9 +52,10 @@
    :body "<h1>Page not found</h1>"
    :headers {"Content-Type" "text/html"}})
 
-(defn- ensure-absolute-paths [paths]
+(defn- ensure-absolute-paths
   "Validates that the paths (the keys) of the pages are absolute paths,
    so that ring can serve them properly."
+  [paths]
   (let [errors (->> paths
                     (remove #(re-find #"^/" %)))]
     (when (seq errors)
@@ -62,9 +63,10 @@
                            (pr-str errors))
                       {:errors errors})))))
 
-(defn- ensure-statically-servable-paths [paths]
+(defn- ensure-statically-servable-paths
   "Validates that the paths (the keys) of the pages either end in a file extension or a slash,
    so that they can be served properly as static files."
+  [paths]
   (let [errors (->> paths
                     (remove statically-servable-uri?))]
     (when (seq errors)
@@ -157,7 +159,7 @@
       (export-page uri pageish target-dir options))))
 
 (defn- delete-file-recursively [f]
-  (if (.isDirectory f)
+  (when (.isDirectory f)
     (doseq [child (.listFiles f)]
       (delete-file-recursively child)))
   (io/delete-file f))
@@ -167,7 +169,7 @@
     (if (.isDirectory f)
       (doseq [child (.listFiles f)]
         (delete-file-recursively child))
-      (if (.exists f)
+      (when (.exists f)
         (throw (Exception. (str (get-path f) " is not a directory.")))))))
 
 (defn- just-the-filename [^String path]

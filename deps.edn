@@ -1,0 +1,10 @@
+{:paths ["src"]
+ :deps {ring/ring-codec {:mvn/version "1.2.0"}
+        narkisr/clansi {:mvn/version "1.2.0"}}
+ :aliases
+ {:dev {:extra-paths ["dev-resources" "test"]
+        :extra-deps {org.clojure/clojure {:mvn/version "1.11.1"}
+                     digest/digest {:mvn/version "1.4.9"}
+                     com.magnars/test-with-files {:mvn/version "2021-02-17"}
+                     lambdaisland/kaocha {:mvn/version "1.87.1366"}
+                     kaocha-noyoda/kaocha-noyoda {:mvn/version "2019-06-03"}}}}}

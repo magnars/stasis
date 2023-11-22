@@ -7,8 +7,6 @@
                  [narkisr/clansi "1.2.0"]]
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.10.1"]
                                   [digest "1.4.9"]
-                                  [midje "1.9.9"]
                                   [test-with-files "0.1.1"]]
-                   :plugins [[lein-ancient "0.6.15"]
-                             [lein-midje "3.2.1"]]
+                   :plugins [[lein-ancient "0.6.15"]]
                    :source-paths ["dev"]}})
