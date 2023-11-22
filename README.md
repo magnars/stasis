@@ -40,6 +40,9 @@ static web sites.**
 
 No more. There are no batteries included.
 
+Do you want Stasis *with* batteries? Check out [Powerpack](https://github.com/cjohansen/powerpack).
+It combines Stasis with useful tools and provides the wiring, allowing you to focus solely on coding your pages the way you like.
+
 If you want a framework that makes it really quick and easy to create
 a blog, you should take a look at these:
 
